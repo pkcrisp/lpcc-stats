@@ -67,7 +67,7 @@
       +'table th.lpcc-asc::after{content:" \\25B4"}'
       +'.lpcc-more{display:block;margin:10px auto 22px;background:#fff;border:1px solid #0a5b3a;'
       +'color:#0a5b3a;border-radius:8px;padding:8px 18px;font-weight:600;cursor:pointer;font-size:14px}'
-      +'#lpcc-bar{position:sticky;top:8px;z-index:20;display:flex;gap:10px;align-items:center;'
+      +'#lpcc-bar{position:sticky;top:52px;z-index:20;display:flex;gap:10px;align-items:center;'
       +'flex-wrap:wrap;margin:0 0 16px;background:#fff;border:1px solid #e1e7e3;border-left:4px solid #0a5b3a;'
       +'border-radius:12px;padding:11px 16px;box-shadow:0 2px 8px rgba(26,34,30,.12)}'
       +'#lpcc-bar b{color:#0a5b3a}#lpcc-bar input{flex:1;min-width:220px;padding:10px 12px;'
