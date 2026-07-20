@@ -11,18 +11,29 @@
   var state=new WeakMap();
   var CAP=20;                                   // rows shown before "Show all"
   function dataRows(tbl){return [].slice.call(tbl.rows).slice(1);}
-  function applyCap(tbl){                        // collapse to top CAP (unless searching/expanded)
+  function applyCap(tbl){                        // collapse (unless searching/expanded)
     if(!tbl.__cap||tbl.__searching)return;
-    dataRows(tbl).forEach(function(r,i){r.style.display=(!tbl.__expanded&&i>=CAP)?'none':'';});
+    var rows=dataRows(tbl), n=rows.length, N=tbl.__capn, bot=tbl.__capBottom;
+    rows.forEach(function(r,i){                  // bottom-anchored hides the OLDER (top) rows
+      var hide=!tbl.__expanded && (bot ? (i < n-N) : (i >= N));
+      r.style.display=hide?'none':'';
+    });
   }
   function setupCap(tbl){
-    if(dataRows(tbl).length<=CAP+2)return;       // short table — no point
-    tbl.__cap=true; tbl.__expanded=false;
+    var bot=tbl.getAttribute('data-cap')==='bottom';
+    var N=parseInt(tbl.getAttribute('data-capn'),10)||CAP;
+    if(dataRows(tbl).length<=N+2)return;         // short table — no point
+    tbl.__cap=true; tbl.__expanded=false; tbl.__capBottom=bot; tbl.__capn=N;
     var b=document.createElement('button'); b.type='button'; b.className='lpcc-more';
-    function lbl(){return tbl.__expanded?('▴ Show top '+CAP):('▾ Show all '+dataRows(tbl).length);}
+    function lbl(){
+      var n=dataRows(tbl).length;
+      if(bot)return tbl.__expanded?('▾ Show recent '+N):('▴ Show all '+n+' (earlier years)');
+      return tbl.__expanded?('▴ Show top '+N):('▾ Show all '+n);
+    }
     b.textContent=lbl();
     b.onclick=function(){tbl.__expanded=!tbl.__expanded;b.textContent=lbl();applyCap(tbl);};
-    var wrap=tbl.parentNode;(wrap.parentNode||wrap).insertBefore(b,wrap.nextSibling);
+    var wrap=tbl.parentNode;                     // bottom-anchored: button ABOVE (expand upward)
+    (wrap.parentNode||wrap).insertBefore(b, bot?wrap:wrap.nextSibling);
     tbl.__moreBtn=b; applyCap(tbl);
   }
   function sortTable(tbl,ci){
