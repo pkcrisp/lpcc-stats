@@ -9,6 +9,22 @@
     return isNaN(n)?t.toLowerCase():n;
   }
   var state=new WeakMap();
+  var CAP=20;                                   // rows shown before "Show all"
+  function dataRows(tbl){return [].slice.call(tbl.rows).slice(1);}
+  function applyCap(tbl){                        // collapse to top CAP (unless searching/expanded)
+    if(!tbl.__cap||tbl.__searching)return;
+    dataRows(tbl).forEach(function(r,i){r.style.display=(!tbl.__expanded&&i>=CAP)?'none':'';});
+  }
+  function setupCap(tbl){
+    if(dataRows(tbl).length<=CAP+2)return;       // short table — no point
+    tbl.__cap=true; tbl.__expanded=false;
+    var b=document.createElement('button'); b.type='button'; b.className='lpcc-more';
+    function lbl(){return tbl.__expanded?('▴ Show top '+CAP):('▾ Show all '+dataRows(tbl).length);}
+    b.textContent=lbl();
+    b.onclick=function(){tbl.__expanded=!tbl.__expanded;b.textContent=lbl();applyCap(tbl);};
+    var wrap=tbl.parentNode;(wrap.parentNode||wrap).insertBefore(b,wrap.nextSibling);
+    tbl.__moreBtn=b; applyCap(tbl);
+  }
   function sortTable(tbl,ci){
     var rows=[].slice.call(tbl.rows); if(rows.length<3)return;
     var header=rows[0], body=rows.slice(1);
@@ -17,13 +33,17 @@
     body.forEach(function(r){tbl.appendChild(r);});
     [].forEach.call(header.cells,function(th){th.classList.remove('lpcc-sorted','lpcc-asc');});
     header.cells[ci].classList.add('lpcc-sorted'); if(asc)header.cells[ci].classList.add('lpcc-asc');
+    applyCap(tbl);                               // re-collapse to the top of the new order
   }
   function filt(q){
-    q=(q||'').toLowerCase().trim(); var shown=0,total=0;
+    q=(q||'').toLowerCase().trim(); var shown=0;
     document.querySelectorAll('table').forEach(function(tbl){
       if(!tbl.__enh)return;
-      [].slice.call(tbl.rows).slice(1).forEach(function(r){
-        total++; var ok=!q||r.textContent.toLowerCase().indexOf(q)>=0;
+      tbl.__searching=!!q;
+      if(!q){ applyCap(tbl); if(tbl.__moreBtn)tbl.__moreBtn.style.display=''; return; }
+      if(tbl.__moreBtn)tbl.__moreBtn.style.display='none';   // search sees everything
+      dataRows(tbl).forEach(function(r){
+        var ok=r.textContent.toLowerCase().indexOf(q)>=0;
         r.style.display=ok?'':'none'; if(ok)shown++;
       });
     });
@@ -34,6 +54,8 @@
     st.textContent='table th{cursor:pointer;user-select:none}'
       +'table th.lpcc-sorted::after{content:" \\25BE";font-size:.8em}'
       +'table th.lpcc-asc::after{content:" \\25B4"}'
+      +'.lpcc-more{display:block;margin:10px auto 22px;background:#fff;border:1px solid #0a5b3a;'
+      +'color:#0a5b3a;border-radius:8px;padding:8px 18px;font-weight:600;cursor:pointer;font-size:14px}'
       +'#lpcc-bar{position:sticky;top:8px;z-index:20;display:flex;gap:10px;align-items:center;'
       +'flex-wrap:wrap;margin:0 0 16px;background:#fff;border:1px solid #e1e7e3;border-left:4px solid #0a5b3a;'
       +'border-radius:12px;padding:11px 16px;box-shadow:0 2px 8px rgba(26,34,30,.12)}'
@@ -44,6 +66,7 @@
       if(tbl.rows.length<3)return; tbl.__enh=true;
       [].forEach.call(tbl.rows[0].cells,function(th,ci){th.title='Sort by '+(th.textContent||'').trim();
         th.addEventListener('click',function(){sortTable(tbl,ci);});});
+      setupCap(tbl);
     });
     var card=document.querySelector('div[style*="box-shadow"]');
     var container=card?card.parentNode:document.body;
@@ -52,7 +75,7 @@
     container.insertBefore(bar, card?card.nextSibling:container.firstChild);
     bar.querySelector('input').addEventListener('input',function(){filt(this.value);});
     var tip=document.createElement('div'); tip.style.cssText='color:#8fa096;font-size:12px;margin:-8px 0 14px;text-align:center';
-    tip.textContent='Tip: click any column heading to sort.'; container.insertBefore(tip,bar.nextSibling);
+    tip.textContent='Tip: click a heading to sort · search finds any player, even outside the top 20.'; container.insertBefore(tip,bar.nextSibling);
   }
   if(document.readyState!=='loading')init(); else document.addEventListener('DOMContentLoaded',init);
 })();
