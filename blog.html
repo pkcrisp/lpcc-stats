@@ -9,35 +9,39 @@
 <body style="margin:0;background:#f4f6f4">
 <div class="dp"><style>
 :root{--green:#0a5b3a;--red:#d9322a;--bg:#f4f6f4;--ink:#1a221e;--mut:#64716a;--line:#e1e7e3;--card:#fff}
-.dp{font-family:Arial,Helvetica,sans-serif;max-width:760px;margin:0 auto;padding:18px 20px;color:var(--ink)}
+.dp{font-family:Arial,Helvetica,sans-serif;max-width:1080px;margin:0 auto;padding:18px 20px;color:var(--ink)}
 .dp-hero{background:linear-gradient(135deg,#0a5b3a,#0e7a4d);color:#fff;border-radius:16px;
  padding:26px 28px;margin:0 0 18px;box-shadow:0 2px 10px rgba(10,91,58,.3)}
 .dp-hero h1{margin:0;font-size:1.9rem;text-transform:uppercase;letter-spacing:.5px}
 .dp-hero p{margin:.5em 0 0;opacity:.92;max-width:640px}
-.dp-bar{position:sticky;top:0;z-index:30;background:var(--bg);padding:10px 0;margin-bottom:10px;
- display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.dp-bar input{flex:1;min-width:220px;padding:11px 14px;border:1px solid #ccd3cc;border-radius:10px;
- font-size:15px;background:#fff}
-.dp-bar #dp-count{color:var(--mut);font-size:.8rem;white-space:nowrap}
-.dp-nav{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:18px;
- box-shadow:0 1px 3px rgba(26,34,30,.08)}
-.dp-nav>summary{cursor:pointer;padding:12px 16px;font-weight:bold;color:var(--green);list-style:none}
-.dp-nav>summary::-webkit-details-marker{display:none}
-.dp-nav>summary::before{content:"▸ ";font-size:.8em}
-.dp-nav[open]>summary::before{content:"▾ "}
-.dp-navwrap{padding:0 16px 12px}
-.dp-snav{margin:6px 0}
-.dp-snav>b{color:var(--red);font-size:.8rem;text-transform:uppercase;letter-spacing:.4px}
-.dp-snav ul{list-style:none;margin:6px 0 0;padding:0}
-.dp-snav li{padding:3px 0;border-bottom:1px solid var(--line)}
-.dp-snav a{color:var(--ink);text-decoration:none;font-size:.88rem;display:flex;gap:8px}
+.dp-cols{display:flex;gap:24px;align-items:flex-start}
+.dp-side{flex:0 0 244px;position:sticky;top:12px;align-self:flex-start;
+ max-height:calc(100vh - 24px);overflow:auto;background:var(--card);border:1px solid var(--line);
+ border-radius:14px;padding:14px;box-shadow:0 1px 3px rgba(26,34,30,.08)}
+.dp-main{flex:1 1 auto;min-width:0}
+.dp-side input{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #ccd3cc;
+ border-radius:10px;font-size:14px;background:#fff}
+.dp-side #dp-count{display:block;color:var(--mut);font-size:.75rem;margin:8px 2px 4px}
+.dp-navttl{color:var(--green);font-weight:bold;font-size:.8rem;text-transform:uppercase;
+ letter-spacing:.5px;margin:10px 2px 6px}
+.dp-snav{border-top:1px solid var(--line)}
+.dp-snav>summary{cursor:pointer;padding:9px 2px;font-weight:bold;color:var(--ink);font-size:.9rem;
+ list-style:none;display:flex;justify-content:space-between}
+.dp-snav>summary::-webkit-details-marker{display:none}
+.dp-snav>summary::after{content:"▸";color:var(--mut);font-size:.8em}
+.dp-snav[open]>summary::after{content:"▾"}
+.dp-snav>summary b{color:var(--red);font-weight:normal;font-size:.85em}
+.dp-snav ul{list-style:none;margin:0 0 8px;padding:0}
+.dp-snav li{padding:3px 0}
+.dp-snav a{color:var(--ink);text-decoration:none;font-size:.84rem;display:flex;gap:7px;line-height:1.3}
 .dp-snav a:hover{color:var(--green)}
-.dp-snav a .d{color:var(--mut);min-width:46px;font-variant-numeric:tabular-nums}
+.dp-snav a .d{color:var(--mut);min-width:42px;font-variant-numeric:tabular-nums}
 .dp-season{color:var(--green);border-bottom:2px solid var(--red);padding-bottom:5px;
- margin:26px 0 14px;text-transform:uppercase;font-size:1.15rem;scroll-margin-top:70px}
+ margin:4px 0 14px;text-transform:uppercase;font-size:1.15rem;scroll-margin-top:16px}
+.dp-season:not(:first-child){margin-top:26px}
 .dp-season span{color:var(--mut);font-size:.7em;font-weight:normal;text-transform:none}
 .dp-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;
- margin:0 0 20px;box-shadow:0 1px 3px rgba(26,34,30,.08);scroll-margin-top:70px}
+ margin:0 0 20px;box-shadow:0 1px 3px rgba(26,34,30,.08);scroll-margin-top:16px}
 .dp-card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .dp-card-h h2{color:var(--green);margin:0 0 2px;font-size:1.3rem}
 .dp-badge{background:var(--red);color:#fff;border-radius:999px;padding:2px 11px;font-size:.75rem;
@@ -47,146 +51,12 @@
 .dp-body b,.dp-body strong{color:#123}
 #dp-empty{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;
  color:var(--mut);font-style:italic}
-.dp-foot{color:#8fa096;font-size:.75rem;text-align:center;margin-top:8px}
-</style><div class="dp-hero"><h1>🦆 The Duck Pond</h1><p>The weekly Duck Report, in full honours-board pomp. Every dismissal for nought, immortalised.</p></div><div class="dp-bar"><input id="dp-q" type="search" autocomplete="off" placeholder="Search the reports — your name, a team, an opponent…"><span id="dp-count"></span></div><details class="dp-nav" open><summary>📅 Browse by season</summary><div class="dp-navwrap"><div class="dp-snav"><b>2026 season · 8 reports</b><ul><li><a href="#r-2026-07-14-0"><span class="d">14 Jul</span><span>🦆🏏 DUCK CLUB – WEEKS 11, 12 &amp; 13 🏏🦆</span></a></li><li><a href="#r-2026-06-28-1"><span class="d">28 Jun</span><span>🦆 Linton Park Duck Club Report</span></a></li><li><a href="#r-2026-06-06-2"><span class="d">6 Jun</span><span>LPCC Duck Club Report – Weeks 6 &amp; 7</span></a></li><li><a href="#r-2026-05-18-3"><span class="d">18 May</span><span>🦆 LPCC DUCK REPORT – WEEK 5 🦆</span></a></li><li><a href="#r-2026-05-15-4"><span class="d">15 May</span><span>LPCC Duck Hunting Season 2026 – Week 4 Report</span></a></li><li><a href="#r-2026-05-06-5"><span class="d">6 May</span><span>LPCC Duck Hunt 2026 – Week 3 Update</span></a></li><li><a href="#r-2026-05-01-6"><span class="d">1 May</span><span>🦆 LPCC Duck Report – Slightly Delayed Edition 🦆</span></a></li><li><a href="#r-2026-04-20-7"><span class="d">20 Apr</span><span>🦆 Duck Club Returns – Opening Weekend 2026</span></a></li></ul></div><div class="dp-snav"><b>2025 season · 20 reports</b><ul><li><a href="#r-2025-09-12-8"><span class="d">12 Sep</span><span>A new leader has emerged in the race for Duck of t…</span></a></li><li><a href="#r-2025-09-04-9"><span class="d">4 Sep</span><span>Saturday 1s v Kings Hill</span></a></li><li><a href="#r-2025-08-27-10"><span class="d">27 Aug</span><span>Two weekends of updates for you as I missed last w…</span></a></li><li><a href="#r-2025-08-11-11"><span class="d">11 Aug</span><span>Quick roundup of ducks across the games, as I actu…</span></a></li><li><a href="#r-2025-08-04-12"><span class="d">4 Aug</span><span>We have a new leader in the race for duck of the y…</span></a></li><li><a href="#r-2025-07-30-13"><span class="d">30 Jul</span><span>It&#x27;s been a while since we had cause for an update…</span></a></li><li><a href="#r-2025-07-15-14"><span class="d">15 Jul</span><span>🦆🦆 DUCK NEWS 🦆🦆</span></a></li><li><a href="#r-2025-07-08-15"><span class="d">8 Jul</span><span>🦆🦆 DUCK NEWS 🦆🦆</span></a></li><li><a href="#r-2025-07-03-16"><span class="d">3 Jul</span><span>🦆🦆Midweek duck update! 🦆🦆</span></a></li><li><a href="#r-2025-06-30-17"><span class="d">30 Jun</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-06-23-18"><span class="d">23 Jun</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-06-16-19"><span class="d">16 Jun</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-06-13-20"><span class="d">13 Jun</span><span>Cheeky update after last night&#x27;s t20.</span></a></li><li><a href="#r-2025-06-09-21"><span class="d">9 Jun</span><span>🦆 Duck News from the weekend 🦆  Wet weather is gre…</span></a></li><li><a href="#r-2025-06-02-22"><span class="d">2 Jun</span><span>🦆 Duck News 🦆</span></a></li><li><a href="#r-2025-05-27-23"><span class="d">27 May</span><span>As you may have inferred from JKs message yesterda…</span></a></li><li><a href="#r-2025-05-25-24"><span class="d">25 May</span><span>🦆 Duck News 🦆</span></a></li><li><a href="#r-2025-05-19-25"><span class="d">19 May</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-05-18-26"><span class="d">18 May</span><span>Toby Joseph recorded his 12th duck moving level wi…</span></a></li><li><a href="#r-2025-05-16-27"><span class="d">16 May</span><span>Lukey was feeling lonely in the 50 ducks club so w…</span></a></li></ul></div></div></details><div id="dp-feed"><h2 class="dp-season" data-season="2026">2026 Season <span>8 reports</span></h2><article id="r-2026-07-14-0" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆🏏 <b>DUCK CLUB – WEEKS 11, 12 &amp; 13</b> 🏏🦆</h2><span class="dp-badge">20 ducks</span></div><div class="dp-meta">Week of 1 Jul 2026 – 14 Jul 2026</div><div class="dp-body">Three weeks. Twenty ducks. Some old hands adding to already impressive collections, some new recruits opening their accounts, and one man moving to within touching distance of the WhatsApp group.
-
-Time to catch up on all the latest action from Duck Club…
-
-🦆 <b>WEEK 11</b> 🦆
-
-🏏 <b>Saturday 27th June</b>
-
-<b>1st XI v Ashford Town</b>
-
-🦆 <b>Jordan Austin – 2nd of the season | 52nd overall</b>
-
-Jordan moves onto 52 career ducks and continues to quietly build the sort of total that guarantees lifelong membership of this prestigious institution. Already safely through the doors of Duck Club, Jordan clearly sees no reason to stop contributing.
-
-<b>2nd XI v Staplehurst</b>
-
-🌧️ Match abandoned, but those who did make it to the crease successfully avoided troubling the Duck Club statisticians.
-
-<b>3rd XI v Faversham</b>
-
-🦆 <b>Jono Sisely – 3rd of the season | 12th overall</b>
-
-Jono moves onto three for the season and 12 overall. A strong campaign is developing, and with plenty of cricket still to play, there’s every chance he can add a few more before the summer is out.
-
-<b>4th XI v The Mote</b>
-
-🌧️ Match abandoned before LPCC had the opportunity to bat. Duck Club denied.
-
-🏏 <b>Sunday 28th June</b>
-
-<b>1st XI v Rolvenden</b>
-
-🦆 <b>Ian Lowe – 1st of the season | 6th overall</b>
-
-Ian opens his account for 2026 and moves onto six overall. Little did he know he’d be back remarkably soon…
-
-🦆 <b>Ian Hollingworth – 2nd of the season | 36th overall</b>
-
-Holly moves onto 36 career ducks and continues his steady march towards the magical 50. Fourteen more required for full Duck Club membership.
-
-Keep going, Ian. We believe in you.
-
-<b>2nd XI v Southfleet</b>
-
-✅ No ducks.
-
-🏏 <b>Wednesday 1st July</b>
-
-<b>Midweek XI v Warlingham</b>
-
-✅ No ducks.
-
-A relatively restrained Week 11 by Duck Club standards.
-
-━━━━━━━━━━━━━━━━━━━━
-
-🦆 <b>WEEK 12</b> 🦆
-
-🏏 <b>Saturday 4th July</b>
-
-<b>1st XI v Offham</b>
-
-🦆 <b>Ben Austin – 2nd of the season | 31st overall</b>
-
-Another Austin enters the report as Ben moves onto 31 career ducks. The family contribution to Duck Club continues to grow.
-
-🦆 <b>Henry Campbell – 3rd of the season | 12th overall</b>
-
-Henry moves onto three for the season and 12 overall. More importantly, those three ducks have come from just five innings.
-
-Efficiency.
-
-<b>2nd XI v Offham</b>
-
-✅ No ducks.
-
-<b>3rd XI v Borstal</b>
-
-🦆 <b>Euan Beardwell – 4th of the season | 7th overall</b>
-
-Euan moves onto four for the season and is rapidly establishing himself as one of 2026’s most consistent contributors.
-
-Seven career ducks now, with more than half arriving this season alone.
-
-Outstanding acceleration.
-
-<b>4th XI v Bapchild</b>
-
-🦆 <b>Trevor Back – 1st of the season | 94th overall</b>
-
-🚨 <b>NINETY-FOUR.</b> 🚨
-
-Never too old to get a zero.
-
-Trevor returns to the Duck Club report for the first time this season and moves onto a quite magnificent 94 career ducks.
-
-Just six more.
-
-Six.
-
-The century is now close enough to taste.
-
-History awaits.
-
-🦆 <b>Ian Lowe – 2nd of the season | 7th overall</b>
-
-Six days after opening his account for the season, Ian decides one simply wasn’t enough and immediately comes back for another.
-
-That’s two for the season and seven overall.
-
-Form is temporary.
-
-Duck Club is permanent.
-
-🏏 <b>Sunday 5th July</b>
-
-<b>1st XI v Sandwich Town</b>
-
-✅ No ducks.
-
-<b>2nd XI v Addington</b>
-
-✅ No ducks.
-
-🏏 <b>Wednesday 8th July</b>
-
-<b>Midweek 100 Ball v Marden</b>
-
-✅ No ducks.
-
-Week 12 belongs to Trevor Back.
-
-Ninety-four career ducks and counting.
-
-━━━━━━━━━━━━━━━━━━━━
-
-🦆 <b>WEEK 13</b> 🦆
-
-And then things got busy.
+.dp-foot{color:#8fa096;font-size:.75rem;text-align:center;margin-top:18px}
+@media(max-width:820px){
+ .dp-cols{flex-direction:column}
+ .dp-side{position:static;flex:auto;width:100%;max-height:none;box-sizing:border-box}
+}
+</style><div class="dp-hero"><h1>🦆 The Duck Pond</h1><p>The weekly Duck Report, in full honours-board pomp. Every dismissal for nought, immortalised.</p></div><div class="dp-cols"><aside class="dp-side"><input id="dp-q" type="search" autocomplete="off" placeholder="Search — a name, a team, an opponent…"><span id="dp-count"></span><div class="dp-navttl">📅 Browse by season</div><details class="dp-snav" open><summary>2026 season <b>13</b></summary><ul><li><a href="#r-2026-07-12-0"><span class="d">12 Jul</span><span>🦆 Duck Club — Week 13</span></a></li><li><a href="#r-2026-07-05-1"><span class="d">5 Jul</span><span>🦆 Duck Club — Week 12</span></a></li><li><a href="#r-2026-06-28-2"><span class="d">28 Jun</span><span>🦆 Duck Club — Week 11</span></a></li><li><a href="#r-2026-06-21-3"><span class="d">21 Jun</span><span>🦆 LPCC Duck Report — Week 10</span></a></li><li><a href="#r-2026-06-14-4"><span class="d">14 Jun</span><span>🦆 LPCC Duck Report — Week 9</span></a></li><li><a href="#r-2026-06-07-5"><span class="d">7 Jun</span><span>🦆 LPCC Duck Report — Week 8</span></a></li><li><a href="#r-2026-05-31-6"><span class="d">31 May</span><span>🦆 LPCC Duck Report — Week 7</span></a></li><li><a href="#r-2026-05-25-7"><span class="d">25 May</span><span>🦆 LPCC Duck Report — Week 6</span></a></li><li><a href="#r-2026-05-17-8"><span class="d">17 May</span><span>🦆 LPCC DUCK REPORT – WEEK 5 🦆</span></a></li><li><a href="#r-2026-05-10-9"><span class="d">10 May</span><span>LPCC Duck Hunting Season 2026 – Week 4 Report</span></a></li><li><a href="#r-2026-05-03-10"><span class="d">3 May</span><span>LPCC Duck Hunt 2026 – Week 3 Update</span></a></li><li><a href="#r-2026-04-26-11"><span class="d">26 Apr</span><span>🦆 LPCC Duck Report – Slightly Delayed Edition 🦆</span></a></li><li><a href="#r-2026-04-19-12"><span class="d">19 Apr</span><span>🦆 Duck Club Returns – Opening Weekend 2026</span></a></li></ul></details><details class="dp-snav"><summary>2025 season <b>17</b></summary><ul><li><a href="#r-2025-09-07-13"><span class="d">7 Sep</span><span>A new leader has emerged in the race for Duck of t…</span></a></li><li><a href="#r-2025-08-31-14"><span class="d">31 Aug</span><span>Saturday 1s v Kings Hill</span></a></li><li><a href="#r-2025-08-26-15"><span class="d">26 Aug</span><span>🦆 Duck News — Week of 23 August</span></a></li><li><a href="#r-2025-08-20-16"><span class="d">20 Aug</span><span>🦆 Duck News — Week of 16 August</span></a></li><li><a href="#r-2025-08-15-17"><span class="d">15 Aug</span><span>Quick roundup of ducks across the games, as I actu…</span></a></li><li><a href="#r-2025-08-03-18"><span class="d">3 Aug</span><span>We have a new leader in the race for duck of the y…</span></a></li><li><a href="#r-2025-07-27-19"><span class="d">27 Jul</span><span>It&#x27;s been a while since we had cause for an update…</span></a></li><li><a href="#r-2025-07-16-20"><span class="d">16 Jul</span><span>🦆🦆 DUCK NEWS 🦆🦆</span></a></li><li><a href="#r-2025-07-11-21"><span class="d">11 Jul</span><span>🦆🦆 DUCK NEWS 🦆🦆</span></a></li><li><a href="#r-2025-07-02-22"><span class="d">2 Jul</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-06-22-23"><span class="d">22 Jun</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-06-15-24"><span class="d">15 Jun</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-06-12-25"><span class="d">12 Jun</span><span>🦆 Duck News from the weekend 🦆  Wet weather is gre…</span></a></li><li><a href="#r-2025-06-01-26"><span class="d">1 Jun</span><span>🦆 Duck News 🦆</span></a></li><li><a href="#r-2025-05-26-27"><span class="d">26 May</span><span>🦆 Duck News 🦆</span></a></li><li><a href="#r-2025-05-18-28"><span class="d">18 May</span><span>🦆 DUCK NEWS 🦆</span></a></li><li><a href="#r-2025-05-11-29"><span class="d">11 May</span><span>Lukey was feeling lonely in the 50 ducks club so w…</span></a></li></ul></details></aside><main class="dp-main"><div id="dp-feed"><h2 class="dp-season" data-season="2026">2026 Season <span>13 reports</span></h2><article id="r-2026-07-12-0" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck Club — Week 13</h2><span class="dp-badge">14 ducks</span></div><div class="dp-meta">Week of 8 Jul 2026 – 12 Jul 2026</div><div class="dp-body">And then things got busy.
 
 Very busy.
 
@@ -541,77 +411,135 @@ Duck Club is life.
 
 🦆 DUCK CLUB PRESIDENT 🦆
 
-👑 50 BEFORE 30 👑</div></article><article id="r-2026-06-28-1" data-season="2026" class="dp-card"><div class="dp-card-h"><h2><strong>🦆 Linton Park Duck Club Report</strong></h2><span class="dp-badge">30 ducks</span></div><div class="dp-meta">Week of 13 Jun 2026 – 28 Jun 2026</div><div class="dp-body"><strong><b>Weeks 8, 9 &amp; 10 - &quot;The Great Catch-Up Edition&quot;</b></strong>
+👑 50 BEFORE 30 👑</div></article><article id="r-2026-07-05-1" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck Club — Week 12</h2><span class="dp-badge">5 ducks</span></div><div class="dp-meta">Week of 1 Jul 2026 – 5 Jul 2026</div><div class="dp-body">🏏 <b>Saturday 4th July</b>
 
-Work commitments have unfortunately delayed this edition of the Duck Club Gazette, but fear not - the duck census has continued in my absence and there is plenty to catch up on. Three weeks of carnage have seen several familiar faces strengthen their credentials for the Golden Duck, while others have proudly opened their accounts for the 2026 campaign.
+<b>1st XI v Offham</b>
 
----
+🦆 <b>Ben Austin – 2nd of the season | 31st overall</b>
 
-<strong>Week 8</strong>
+Another Austin enters the report as Ben moves onto 31 career ducks. The family contribution to Duck Club continues to grow.
 
-<strong>Saturday</strong>
+🦆 <b>Henry Campbell – 3rd of the season | 12th overall</b>
 
-Unfortunately the weather intervened and all Saturday cricket was washed out. The ducks escaped... temporarily.
+Henry moves onto three for the season and 12 overall. More importantly, those three ducks have come from just five innings.
 
-<strong>Sunday 1st XI v Town Malling</strong>
+Efficiency.
 
-Dan Baker recorded his <b>7th career duck</b> and <b>3rd of the season</b>, proving that even one of the club&#x27;s more reliable batsmen likes to keep in touch with his waterfowl roots.
+<b>2nd XI v Offham</b>
 
-Anthony Karassellos meanwhile registered <b>career duck number 23</b>, his <b>second of the campaign</b>, quietly continuing one of the most impressive long-term Duck Club careers in club history.
+✅ No ducks.
 
-<strong>Sunday 2nd XI v Kings Hill</strong>
+<b>3rd XI v Borstal</b>
 
-Finlay Morford doubled his career tally with <b>duck number two</b>, making it two ducks from two this season.
+🦆 <b>Euan Beardwell – 4th of the season | 7th overall</b>
 
-Spencer Gray collected <b>career duck number three</b>, already his <b>third of 2026</b>, continuing what would become an exceptional run of form.
+Euan moves onto four for the season and is rapidly establishing himself as one of 2026’s most consistent contributors.
 
-Zach Wilde also got involved, bringing up <b>career duck number thirteen</b> and his <b>second duck of the season.</b>
+Seven career ducks now, with more than half arriving this season alone.
 
-<strong>Wednesday T20 v Castle Hill</strong>
+Outstanding acceleration.
 
-Every Duck Club needs fresh blood.
+<b>4th XI v Bapchild</b>
 
-Ashley Cairns wasted absolutely no time introducing himself by recording the <b>first duck of both his career and the 2026 season.</b>
+🦆 <b>Trevor Back – 1st of the season | 94th overall</b>
 
-Congratulations Ashley - nobody ever forgets their first.
+🚨 <b>NINETY-FOUR.</b> 🚨
 
----
+Never too old to get a zero.
 
-<strong>Week 9</strong>
+Trevor returns to the Duck Club report for the first time this season and moves onto a quite magnificent 94 career ducks.
 
-<strong>1st XI v Mersham Sports</strong>
+Just six more.
 
-Theo Clements continued climbing the seasonal standings with <b>career duck number fourteen</b>, his <b>fourth of the season</b>. Theo appears determined to challenge the established elite despite actually being capable of batting.
+Six.
 
-Anthony Karassellos was back again. Another duck takes him to <b>23 career ducks</b> and keeps him firmly among the all-time greats.
+The century is now close enough to taste.
 
-<strong>2nd XI v Tonbridge</strong>
+History awaits.
 
-Alex Wade brought up <b>career duck number sixteen</b>, his second this year.
+🦆 <b>Ian Lowe – 2nd of the season | 7th overall</b>
 
-Euan Beardwell continued an increasingly concerning campaign with <b>career duck number five</b>, his <b>third duck of 2026.</b>
+Six days after opening his account for the season, Ian decides one simply wasn’t enough and immediately comes back for another.
 
-Praveen Tunga also featured, recording <b>career duck number eight</b> and his second of the year.
+That’s two for the season and seven overall.
 
-<strong>4th XI v New Ash Green</strong>
+Form is temporary.
 
-Brandon Lindenberg entered the register. Career statistics remain under review, but the Duck Club committee can confirm he did indeed hear the dreaded quack.
+Duck Club is permanent.
 
-<strong>Sunday 2nd XI v Harvel</strong>
+🏏 <b>Sunday 5th July</b>
 
-Euan Beardwell clearly enjoyed his Saturday effort and returned immediately for <b>career duck number six</b>, already <b>four ducks this season</b>.
+<b>1st XI v Sandwich Town</b>
 
-David Holdstock finally opened his Duck Club account with the <b>first duck of his career.</b>
+✅ No ducks.
 
-Ben Wheeler wasn&#x27;t to be left out, collecting <b>career duck number two.</b>
+<b>2nd XI v Addington</b>
 
-Nolan Wilde quietly accumulated <b>career duck number twenty-three</b>, proving longevity is key when hunting waterfowl.
+✅ No ducks.
 
----
+🏏 <b>Wednesday 8th July</b>
 
-<strong>Week 10</strong>
+<b>Midweek 100 Ball v Marden</b>
 
-This may well go down as one of the strongest weeks in recent Duck Club history.
+✅ No ducks.
+
+Week 12 belongs to Trevor Back.
+
+Ninety-four career ducks and counting.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🦆</div></article><article id="r-2026-06-28-2" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck Club — Week 11</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 24 Jun 2026 – 28 Jun 2026</div><div class="dp-body">🏏 <b>Saturday 27th June</b>
+
+<b>1st XI v Ashford Town</b>
+
+🦆 <b>Jordan Austin – 2nd of the season | 52nd overall</b>
+
+Jordan moves onto 52 career ducks and continues to quietly build the sort of total that guarantees lifelong membership of this prestigious institution. Already safely through the doors of Duck Club, Jordan clearly sees no reason to stop contributing.
+
+<b>2nd XI v Staplehurst</b>
+
+🌧️ Match abandoned, but those who did make it to the crease successfully avoided troubling the Duck Club statisticians.
+
+<b>3rd XI v Faversham</b>
+
+🦆 <b>Jono Sisely – 3rd of the season | 12th overall</b>
+
+Jono moves onto three for the season and 12 overall. A strong campaign is developing, and with plenty of cricket still to play, there’s every chance he can add a few more before the summer is out.
+
+<b>4th XI v The Mote</b>
+
+🌧️ Match abandoned before LPCC had the opportunity to bat. Duck Club denied.
+
+🏏 <b>Sunday 28th June</b>
+
+<b>1st XI v Rolvenden</b>
+
+🦆 <b>Ian Lowe – 1st of the season | 6th overall</b>
+
+Ian opens his account for 2026 and moves onto six overall. Little did he know he’d be back remarkably soon…
+
+🦆 <b>Ian Hollingworth – 2nd of the season | 36th overall</b>
+
+Holly moves onto 36 career ducks and continues his steady march towards the magical 50. Fourteen more required for full Duck Club membership.
+
+Keep going, Ian. We believe in you.
+
+<b>2nd XI v Southfleet</b>
+
+✅ No ducks.
+
+🏏 <b>Wednesday 1st July</b>
+
+<b>Midweek XI v Warlingham</b>
+
+✅ No ducks.
+
+A relatively restrained Week 11 by Duck Club standards.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🦆</div></article><article id="r-2026-06-21-3" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report — Week 10</h2><span class="dp-badge">14 ducks</span></div><div class="dp-meta">Week of 17 Jun 2026 – 21 Jun 2026</div><div class="dp-body">This may well go down as one of the strongest weeks in recent Duck Club history.
 
 <strong>1st XI v Sibton Park</strong>
 
@@ -731,85 +659,61 @@ Until next week...
 
 <b>Remember:</b> runs are temporary.
 
-<b>Ducks are forever.</b></div></article><article id="r-2026-06-06-2" data-season="2026" class="dp-card"><div class="dp-card-h"><h2><strong>LPCC Duck Club Report – Weeks 6 &amp; 7</strong></h2><span class="dp-badge">16 ducks</span></div><div class="dp-meta">Week of 23 May 2026 – 31 May 2026</div><div class="dp-body"><strong>Saturday 23rd May</strong>
+<b>Ducks are forever.</b></div></article><article id="r-2026-06-14-4" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report — Week 9</h2><span class="dp-badge">10 ducks</span></div><div class="dp-meta">Week of 13 Jun 2026 – 14 Jun 2026</div><div class="dp-body"><strong>1st XI v Mersham Sports</strong>
 
-<strong>1st XI v Whitstable</strong>
+Theo Clements continued climbing the seasonal standings with <b>career duck number fourteen</b>, his <b>fourth of the season</b>. Theo appears determined to challenge the established elite despite actually being capable of batting.
 
-<b>Theo Clements</b> records his <b>second duck of the season</b> and <b>12th overall</b>. Theo appears to have conducted a drive-by on fellow Duck Club member Sam Boyns, who would be in action the following day in the NVKC fixture. Theo&#x27;s early-season form suggests he may yet become a serious contender in the Duck of the Year standings.
+Anthony Karassellos was back again. Another duck takes him to <b>23 career ducks</b> and keeps him firmly among the all-time greats.
 
-<b>Nick Pennefather</b> records his <b>first duck of the season</b> and <b>eighth overall</b>. Nick must have been travelling in the same vehicle as Theo as he conducts a drive-by on <b>Carl Davis</b>, who enjoyed two tours of Duck Club duty between 1994-1998 before returning for a successful comeback tour from 2007-2009.
+<strong>2nd XI v Tonbridge</strong>
 
-<strong>2nd XI, 3rd XI &amp; 4th XI</strong>
+Alex Wade brought up <b>career duck number sixteen</b>, his second this year.
 
-No ducks recorded.
+Euan Beardwell continued an increasingly concerning campaign with <b>career duck number five</b>, his <b>third duck of 2026.</b>
 
----
+Praveen Tunga also featured, recording <b>career duck number eight</b> and his second of the year.
 
-<strong>Sunday 24th May</strong>
+<strong>4th XI v New Ash Green</strong>
 
-<strong>NVKC XI v Chestfield</strong>
+Brandon Lindenberg entered the register. Career statistics remain under review, but the Duck Club committee can confirm he did indeed hear the dreaded quack.
 
-The Duck Club headed to the Kent coast and returned with a little fishy.
+<strong>Sunday 2nd XI v Harvel</strong>
 
-<b>Luke Welsman</b> records his <b>first duck of the season</b> and <b>53rd overall</b>. Luke has been relatively quiet in recent seasons but remains one of Duck Club&#x27;s most reliable contributors. He has now recorded at least one duck in each of the last <b>14 seasons</b>.
+Euan Beardwell clearly enjoyed his Saturday effort and returned immediately for <b>career duck number six</b>, already <b>four ducks this season</b>.
 
-This week&#x27;s entry has prompted the introduction of two new Duck Club historical categories:
+David Holdstock finally opened his Duck Club account with the <b>first duck of his career.</b>
 
-<strong>Longest Duck Streak</strong>
+Ben Wheeler wasn&#x27;t to be left out, collecting <b>career duck number two.</b>
 
-Consecutive seasons with at least one duck.
+Nolan Wilde quietly accumulated <b>career duck number twenty-three</b>, proving longevity is key when hunting waterfowl.
 
-Current historical leaders:
+---</div></article><article id="r-2026-06-07-5" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report — Week 8</h2><span class="dp-badge">5 ducks</span></div><div class="dp-meta">Week of 6 Jun 2026 – 7 Jun 2026</div><div class="dp-body"><strong>Saturday</strong>
 
-🥇 <b>John Thirkell</b> – 28 consecutive seasons
-🥈 <b>Richard Piper</b> – 26 consecutive seasons
+Unfortunately the weather intervened and all Saturday cricket was washed out. The ducks escaped... temporarily.
 
-<strong>Career Duck</strong>
+<strong>Sunday 1st XI v Town Malling</strong>
 
-A player who has recorded at least one duck in every season of their LPCC career.
+Dan Baker recorded his <b>7th career duck</b> and <b>3rd of the season</b>, proving that even one of the club&#x27;s more reliable batsmen likes to keep in touch with his waterfowl roots.
 
-Luke&#x27;s record currently stands at:
+Anthony Karassellos meanwhile registered <b>career duck number 23</b>, his <b>second of the campaign</b>, quietly continuing one of the most impressive long-term Duck Club careers in club history.
 
-* Seasons Played: 14
-* Seasons With Ducks: 14
+<strong>Sunday 2nd XI v Kings Hill</strong>
 
-A perfect Career Duck record.
+Finlay Morford doubled his career tally with <b>duck number two</b>, making it two ducks from two this season.
 
-The question now is not whether Luke is a Career Duck. The question is how long he can keep the streak alive.
+Spencer Gray collected <b>career duck number three</b>, already his <b>third of 2026</b>, continuing what would become an exceptional run of form.
 
-<strong>Sunday 2nd XI v Faversham</strong>
+Zach Wilde also got involved, bringing up <b>career duck number thirteen</b> and his <b>second duck of the season.</b>
 
-No ducks recorded.
+<strong>Wednesday T20 v Castle Hill</strong>
 
-<strong>Friendly XI v Bredgar</strong>
+Every Duck Club needs fresh blood.
 
-Two new names join the all-time Duck Club register.
+Ashley Cairns wasted absolutely no time introducing himself by recording the <b>first duck of both his career and the 2026 season.</b>
 
-<b>Ben Wheeler</b> records his maiden LPCC duck after previously avoiding the debutante category. Ben now sits on <b>1 duck from 4 innings</b>.
+Congratulations Ashley - nobody ever forgets their first.
 
-<b>Finlay Morford</b> also records his first LPCC duck and joins the club with <b>1 duck from 3 innings</b>.
-
-Both have successfully completed their initiation into the Duck Club.
-
-<strong>Women&#x27;s Softball v Cobham</strong>
-
-<b>Claire Rootes</b> records her <b>second duck from four innings</b>.
-
-<b>Ashley</b> records her <b>first duck from three innings</b>.
-
-Strong early-season representation from the women&#x27;s section.
-
----
-
-<strong>Monday 25th May</strong>
-
-<strong>Kent Ramblers</strong>
-
-No ducks recorded.
-
----
-
-<strong>Saturday 30th May</strong>
+---</div></article><article id="r-2026-05-31-6" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report — Week 7</h2><span class="dp-badge">9 ducks</span></div><div class="dp-meta">Week of 30 May 2026 – 31 May 2026</div><div class="dp-body"><strong>Saturday 30th May</strong>
 
 <strong>1st XI v Addington</strong>
 
@@ -895,7 +799,83 @@ The race remains finely balanced.
 
 Tom Beeney and defending champion JK remain tied at the summit, but Theo Clements, Johan Eloff and Jamie Wheeler are all within striking distance.
 
-With over half the season still to play, Duck of the Year remains very much anyone&#x27;s game.</div></article><article id="r-2026-05-18-3" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 <b>LPCC DUCK REPORT – WEEK 5</b> 🦆</h2><span class="dp-badge">11 ducks</span></div><div class="dp-meta">Week of 16 May 2026 – 17 May 2026</div><div class="dp-body">Another bumper week in the 2026 Duck Hunting Season, with ducks recorded across both Saturday and Sunday fixtures. Let’s dive into the carnage.
+With over half the season still to play, Duck of the Year remains very much anyone&#x27;s game.</div></article><article id="r-2026-05-25-7" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report — Week 6</h2><span class="dp-badge">7 ducks</span></div><div class="dp-meta">Week of 23 May 2026 – 25 May 2026</div><div class="dp-body"><strong>Saturday 23rd May</strong>
+
+<strong>1st XI v Whitstable</strong>
+
+<b>Theo Clements</b> records his <b>second duck of the season</b> and <b>12th overall</b>. Theo appears to have conducted a drive-by on fellow Duck Club member Sam Boyns, who would be in action the following day in the NVKC fixture. Theo&#x27;s early-season form suggests he may yet become a serious contender in the Duck of the Year standings.
+
+<b>Nick Pennefather</b> records his <b>first duck of the season</b> and <b>eighth overall</b>. Nick must have been travelling in the same vehicle as Theo as he conducts a drive-by on <b>Carl Davis</b>, who enjoyed two tours of Duck Club duty between 1994-1998 before returning for a successful comeback tour from 2007-2009.
+
+<strong>2nd XI, 3rd XI &amp; 4th XI</strong>
+
+No ducks recorded.
+
+---
+
+<strong>Sunday 24th May</strong>
+
+<strong>NVKC XI v Chestfield</strong>
+
+The Duck Club headed to the Kent coast and returned with a little fishy.
+
+<b>Luke Welsman</b> records his <b>first duck of the season</b> and <b>53rd overall</b>. Luke has been relatively quiet in recent seasons but remains one of Duck Club&#x27;s most reliable contributors. He has now recorded at least one duck in each of the last <b>14 seasons</b>.
+
+This week&#x27;s entry has prompted the introduction of two new Duck Club historical categories:
+
+<strong>Longest Duck Streak</strong>
+
+Consecutive seasons with at least one duck.
+
+Current historical leaders:
+
+🥇 <b>John Thirkell</b> – 28 consecutive seasons
+🥈 <b>Richard Piper</b> – 26 consecutive seasons
+
+<strong>Career Duck</strong>
+
+A player who has recorded at least one duck in every season of their LPCC career.
+
+Luke&#x27;s record currently stands at:
+
+* Seasons Played: 14
+* Seasons With Ducks: 14
+
+A perfect Career Duck record.
+
+The question now is not whether Luke is a Career Duck. The question is how long he can keep the streak alive.
+
+<strong>Sunday 2nd XI v Faversham</strong>
+
+No ducks recorded.
+
+<strong>Friendly XI v Bredgar</strong>
+
+Two new names join the all-time Duck Club register.
+
+<b>Ben Wheeler</b> records his maiden LPCC duck after previously avoiding the debutante category. Ben now sits on <b>1 duck from 4 innings</b>.
+
+<b>Finlay Morford</b> also records his first LPCC duck and joins the club with <b>1 duck from 3 innings</b>.
+
+Both have successfully completed their initiation into the Duck Club.
+
+<strong>Women&#x27;s Softball v Cobham</strong>
+
+<b>Claire Rootes</b> records her <b>second duck from four innings</b>.
+
+<b>Ashley</b> records her <b>first duck from three innings</b>.
+
+Strong early-season representation from the women&#x27;s section.
+
+---
+
+<strong>Monday 25th May</strong>
+
+<strong>Kent Ramblers</strong>
+
+No ducks recorded.
+
+---</div></article><article id="r-2026-05-17-8" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 <b>LPCC DUCK REPORT – WEEK 5</b> 🦆</h2><span class="dp-badge">11 ducks</span></div><div class="dp-meta">Week of 16 May 2026 – 17 May 2026</div><div class="dp-body">Another bumper week in the 2026 Duck Hunting Season, with ducks recorded across both Saturday and Sunday fixtures. Let’s dive into the carnage.
 
 ---
 
@@ -1050,7 +1030,7 @@ Spencer records his <b>2nd duck of the season</b> and <b>2nd overall</b> across 
 
 Until next week, keep your heads still, watch the ball closely… and remember:
 
-<b>Every innings is just one good delivery away from immortality.</b> 🦆🏏</div></article><article id="r-2026-05-15-4" data-season="2026" class="dp-card"><div class="dp-card-h"><h2><strong>LPCC Duck Hunting Season 2026 – Week 4 Report</strong></h2><span class="dp-badge">14 ducks</span></div><div class="dp-meta">Week of 9 May 2026 – 10 May 2026</div><div class="dp-body">Six matches this week — four league fixtures on Saturday and two games on Sunday — provided ample opportunity for ducks to flourish. But did the weekend live up to expectations? We dive into the scorecards to see who now leads the charge for Duck of the Year 2026 and whether any of Duck Club’s more obscure subcategories gained new members.
+<b>Every innings is just one good delivery away from immortality.</b> 🦆🏏</div></article><article id="r-2026-05-10-9" data-season="2026" class="dp-card"><div class="dp-card-h"><h2><strong>LPCC Duck Hunting Season 2026 – Week 4 Report</strong></h2><span class="dp-badge">14 ducks</span></div><div class="dp-meta">Week of 9 May 2026 – 10 May 2026</div><div class="dp-body">Six matches this week — four league fixtures on Saturday and two games on Sunday — provided ample opportunity for ducks to flourish. But did the weekend live up to expectations? We dive into the scorecards to see who now leads the charge for Duck of the Year 2026 and whether any of Duck Club’s more obscure subcategories gained new members.
 
 ---
 
@@ -1184,7 +1164,7 @@ The season is still young, but the field is beginning to take shape.
 
 With a commanding lead and momentum firmly on my side, the question on everyone’s lips is simple:
 
-<b>Can anyone stop me from claiming Duck of the Year 2026?</b></div></article><article id="r-2026-05-06-5" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>LPCC Duck Hunt 2026 – Week 3 Update</h2><span class="dp-badge">3 ducks</span></div><div class="dp-meta">Week of 2 May 2026 – 3 May 2026</div><div class="dp-body">A new leader has emerged in the race for LPCC Duck of the Year 2026.
+<b>Can anyone stop me from claiming Duck of the Year 2026?</b></div></article><article id="r-2026-05-03-10" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>LPCC Duck Hunt 2026 – Week 3 Update</h2><span class="dp-badge">3 ducks</span></div><div class="dp-meta">Week of 2 May 2026 – 3 May 2026</div><div class="dp-body">A new leader has emerged in the race for LPCC Duck of the Year 2026.
 
 With last week’s duck still fresh in the memory, John Karassellos rose to the occasion on Sunday in the 2nd XI fixture against Marden… by adding another. Marden piled on 307, which proved far too much, with the 2s bowled out for 124 in reply. Included in that total was JK’s second duck of the season — and his 51st all-time.
 
@@ -1202,7 +1182,7 @@ Elsewhere, on Saturday, Will Gray recorded his first duck of the season in his t
 
 Filmer’s career is notable not just for its longevity, but for its curious duck-free comebacks — returning after breaks in 1988 and again in 1993 without adding to his tally. A man who knew when to avoid the spotlight.
 
-No other ducks were recorded on a rain-affected Saturday.</div></article><article id="r-2026-05-01-6" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report – Slightly Delayed Edition 🦆</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 25 Apr 2026 – 26 Apr 2026</div><div class="dp-body">A little late with this week’s duck report… I suspect Mark and JK may have thought they’d gotten away with it. Sadly not. I was waiting on the Sunday 2s scorecard… and then promptly forgot.
+No other ducks were recorded on a rain-affected Saturday.</div></article><article id="r-2026-04-26-11" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 LPCC Duck Report – Slightly Delayed Edition 🦆</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 25 Apr 2026 – 26 Apr 2026</div><div class="dp-body">A little late with this week’s duck report… I suspect Mark and JK may have thought they’d gotten away with it. Sadly not. I was waiting on the Sunday 2s scorecard… and then promptly forgot.
 
 Saturday 1s
 
@@ -1231,7 +1211,7 @@ John joins the prestigious ranks alongside myself and Jordan in the Duck Club Ha
 
 Sunday
 
-A rare quiet day for the Duck Club — no ducks recorded.</div></article><article id="r-2026-04-20-7" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck Club Returns – Opening Weekend 2026</h2><span class="dp-badge">5 ducks</span></div><div class="dp-meta">Week of 18 Apr 2026 – 19 Apr 2026</div><div class="dp-body">Welcome back to another glorious Duck Hunting season at Linton Park Cricket Club!
+A rare quiet day for the Duck Club — no ducks recorded.</div></article><article id="r-2026-04-19-12" data-season="2026" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck Club Returns – Opening Weekend 2026</h2><span class="dp-badge">5 ducks</span></div><div class="dp-meta">Week of 18 Apr 2026 – 19 Apr 2026</div><div class="dp-body">Welcome back to another glorious Duck Hunting season at Linton Park Cricket Club!
 
 The 2026 campaign got underway in style this weekend and, crucially, did not disappoint. With five matches across Saturday and Sunday, there was no shortage of opportunity for those dreaded—but celebrated—ducks. As always, best to get those naughty noughts out of the system before the league season fires up in May.
 
@@ -1304,7 +1284,7 @@ Who will rise (or fall) to the occasion next weekend?
 
 We watch. We wait. We celebrate.
 
-🦆</div></article><h2 class="dp-season" data-season="2025">2025 Season <span>20 reports</span></h2><article id="r-2025-09-12-8" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>A new leader has emerged in the race for Duck of the year, hearing there is now a trophy for the prestigious accolade JK has made a late surge securing 2 ducks this past weekend to take him top of the list for the year with 7 ducks leapfrogging all the tob(e)ys.</h2><span class="dp-badge">12 ducks</span></div><div class="dp-meta">Week of 6 Sep 2025 – 7 Sep 2025</div><div class="dp-body">Saturday 1s
+🦆</div></article><h2 class="dp-season" data-season="2025">2025 Season <span>17 reports</span></h2><article id="r-2025-09-07-13" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>A new leader has emerged in the race for Duck of the year, hearing there is now a trophy for the prestigious accolade JK has made a late surge securing 2 ducks this past weekend to take him top of the list for the year with 7 ducks leapfrogging all the tob(e)ys.</h2><span class="dp-badge">12 ducks</span></div><div class="dp-meta">Week of 6 Sep 2025 – 7 Sep 2025</div><div class="dp-body">Saturday 1s
 No Ducks
 
 Saturday 2s
@@ -1330,7 +1310,7 @@ Mardey Castle falls first ball of the innings for a duck, failing to use up the 
 Sunday 2s
 John Karassellos accelerates past Tobey Castle with 7 for the season and pulls up alongside me on 49 senior ducks, HOWEVER, the website records john actually having 50 ducks with one coming in a &#x27;junior&#x27; game (https://lintonpark.play-cricket.com/website/results/4077885), I have consulted with Duck Club President (Luke Welsman) and Duck Club Elder 100+ Ducks (Tim Thirkell) on whether this should be included/excluded. The verdict is  that it should be included as there were several adults on both sides.  With this in mind we welcome the lastest FULL member of the Duck Club, Second Inducktee of the 2025 Season - JK! 
 
-With only three fixtures left to play there is still scope for further ducks, and it could still change at the top again as its a tightly fought contest for duck of the year.</div></article><article id="r-2025-09-04-9" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Saturday 1s v Kings Hill</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 30 Aug 2025 – 31 Aug 2025</div><div class="dp-body">Toby Hughes makes a late surge in an effort to catch the other two Tob(e)ys. He now has 2 ducks this year going inot the final month of the season.  Still a long way to go to best the 1st XI Skipper who currently leads on 6 ducks.
+With only three fixtures left to play there is still scope for further ducks, and it could still change at the top again as its a tightly fought contest for duck of the year.</div></article><article id="r-2025-08-31-14" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Saturday 1s v Kings Hill</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 30 Aug 2025 – 31 Aug 2025</div><div class="dp-body">Toby Hughes makes a late surge in an effort to catch the other two Tob(e)ys. He now has 2 ducks this year going inot the final month of the season.  Still a long way to go to best the 1st XI Skipper who currently leads on 6 ducks.
 
 Saturday 2s v Cobham
 Three ducks in this match - Anthony Karaselloss, Martin Harris and Christian Eloff.
@@ -1350,27 +1330,7 @@ Sunday 4s v Sherwood
 
 Euan Beardwell records his first duck of the year (its never to late in the season to get in on the action).  This is Euan&#x27;s Second Duck for Linton Senior Sides.
 
-No Ducks recorded in the Sunday 1s or 2s - but (un)interestingly 5 players scored 7 in this game.</div></article><article id="r-2025-08-27-10" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Two weekends of updates for you as I missed last weeks ducks.</h2><span class="dp-badge">17 ducks</span></div><div class="dp-meta">Week of 12 Aug 2025 – 25 Aug 2025</div><div class="dp-body">Saturday 16th August
-
-No Game for the 1s.
-
-2s - you already had the live update on this game with Jordan being the only duck. Jordan moved to 49 Ducks in the all time stats joining me 1 away from the 50!
-
-3s - Ducks for Nolan Wilde and Nikesh, Nolan moves to 21 ducks in the all time stats joining club stalwart Dave Todd. Dave&#x27;s 21 ducks came in 236 innings, while Nolan needed only 149 innings to match this. Nikesh moves to 4 ducks, 2 of which have come this season out of his 50 innings across 5 seasons at Linton.
-
-4s - this match was conceded by Hunton so all ducks avoided!
-
-Sunday 17th August
-
-1s - Tobey Castle collects his 5th duck of the season and 34th duck overall.
-
-2s - Two narrow escapes in the 2s with Will Gray and Nick Pennefather both falling for 1.
-
-Wednesday 20th August
-
-Midweek XI - No Ducks.
-
-Saturday 23rd August
+No Ducks recorded in the Sunday 1s or 2s - but (un)interestingly 5 players scored 7 in this game.</div></article><article id="r-2025-08-26-15" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News — Week of 23 August</h2><span class="dp-badge">13 ducks</span></div><div class="dp-meta">Week of 23 Aug 2025 – 26 Aug 2025</div><div class="dp-body">Saturday 23rd August
 
 1s - A new leader emerged in the current duck hunting season, Tobey Castle ascends to the top spot with 6 ducks while Toby Joseph is enjoying his holiday in Thailand. Tobey&#x27;s back to back quacks elevates him in the current duck hunting season as we head into the final month of the season, time will tell whether anyone is able to surpass him. Tobey is now in prestigious Linton company on 35 ducks alongside Gordon Fenner.
 
@@ -1423,7 +1383,25 @@ Alongside Jordy from the English side, Theo Clements secures his 9th Duck for Li
 
 On the SA team Ian Bruce records his second duck of the season and second in his Linton playing career from 13 innings.
 
-Near misses for both Hughes brothers who scored 1 a piece!</div></article><article id="r-2025-08-11-11" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Quick roundup of ducks across the games, as I actually have work to do this week.</h2><span class="dp-badge">7 ducks</span></div><div class="dp-meta">Week of 9 Aug 2025 – 10 Aug 2025</div><div class="dp-body">Saturday 1s v Sibton Park
+Near misses for both Hughes brothers who scored 1 a piece!</div></article><article id="r-2025-08-20-16" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News — Week of 16 August</h2><span class="dp-badge">4 ducks</span></div><div class="dp-meta">Week of 16 Aug 2025 – 20 Aug 2025</div><div class="dp-body">Saturday 16th August
+
+No Game for the 1s.
+
+2s - you already had the live update on this game with Jordan being the only duck. Jordan moved to 49 Ducks in the all time stats joining me 1 away from the 50!
+
+3s - Ducks for Nolan Wilde and Nikesh, Nolan moves to 21 ducks in the all time stats joining club stalwart Dave Todd. Dave&#x27;s 21 ducks came in 236 innings, while Nolan needed only 149 innings to match this. Nikesh moves to 4 ducks, 2 of which have come this season out of his 50 innings across 5 seasons at Linton.
+
+4s - this match was conceded by Hunton so all ducks avoided!
+
+Sunday 17th August
+
+1s - Tobey Castle collects his 5th duck of the season and 34th duck overall.
+
+2s - Two narrow escapes in the 2s with Will Gray and Nick Pennefather both falling for 1.
+
+Wednesday 20th August
+
+Midweek XI - No Ducks.</div></article><article id="r-2025-08-15-17" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Quick roundup of ducks across the games, as I actually have work to do this week.</h2><span class="dp-badge">7 ducks</span></div><div class="dp-meta">Week of 9 Aug 2025 – 15 Aug 2025</div><div class="dp-body">Saturday 1s v Sibton Park
 
 Ben Austin - Overall: 29 Ducks, 2025: 3 Ducks
 Alex Keeler - Overall: 15 Ducks, 2025: 2 Ducks
@@ -1448,7 +1426,7 @@ Zach Wilde - Overall:12 Ducks, 2025: 2 Ducks
 
 Lots of Cricket being played this week for more duck additions. Games on Tuesday and Friday, and the weekend games.
 
-Some movement in the race for duck of the season, Praveen Tunga now joint leads with Toby Joseph (misses next couple of weeks due to holiday) with 5 ducks.</div></article><article id="r-2025-08-04-12" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>We have a new leader in the race for duck of the year, Toby Joseph secured a duck on Sunday after his gripping century on Saturday in the 4&#x27;s. Toby now misses the next 7 games due to holiday so gives the others a chance to catch up in the final months of the season.</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 2 Aug 2025 – 3 Aug 2025</div><div class="dp-body">7 Games were played across Saturday and Sunday this week, and with a number of key players missing this enabled old and new faces to re-join the duck hunt.
+Some movement in the race for duck of the season, Praveen Tunga now joint leads with Toby Joseph (misses next couple of weeks due to holiday) with 5 ducks.</div></article><article id="r-2025-08-03-18" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>We have a new leader in the race for duck of the year, Toby Joseph secured a duck on Sunday after his gripping century on Saturday in the 4&#x27;s. Toby now misses the next 7 games due to holiday so gives the others a chance to catch up in the final months of the season.</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 2 Aug 2025 – 3 Aug 2025</div><div class="dp-body">7 Games were played across Saturday and Sunday this week, and with a number of key players missing this enabled old and new faces to re-join the duck hunt.
 
 in the 1st XI game against Bapchild, Dan Thirkell made a guest appearance but did not succumb to the duck on this occasion, of the 9 1st XI players who batted none recorded the dreaded duck.
 
@@ -1464,7 +1442,7 @@ Moving onto Sunday 1st XI - as previously mentioned Toby Joseph racked up his 5t
 
 In the Sunday 2nd XI fixture away at Pembury, Richard avoided a double duck scenario scoring 4. However, Frank Harbord recorded his first duck of the current season to join in the duck race.  This was Franks 9th adult Duck for the club in his 4th Season of playing.  He joins fan favourite Jon Sisley on 9 Ducks.  Other players include Keith Miller who played 4 seasons in the 1970&#x27;s, John Crellin who played 4 seasons in the 1960&#x27;s and Gerald Wright who played 4 seasons in the 1950&#x27;s.
 
-Finally in the Sunday 3rd XI fixture at Faversham there were two ducks, Alex Wade and Sam King both failed to trouble the scorers. Alex notches up a second for the season, his 14th Overall.  Alex joins the Taylor brothers, the Chairman and Alex Keeler, fine company to keep on 14 Ducks.  Sam king moves to 8 ducks overall joining rising star Thomas Mundell - whose fate has been changing and now has 8 ducks from 14 innings - 4 in a row without a duck.  This was Sam&#x27;s second duck of the season.</div></article><article id="r-2025-07-30-13" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>It&#x27;s been a while since we had cause for an update; I was just waiting on the Sunday Seconds being uploaded to report on the weekends ducktivities.</h2><span class="dp-badge">7 ducks</span></div><div class="dp-meta">Week of 16 Jul 2025 – 27 Jul 2025</div><div class="dp-body">From the Top: Saturday 1s - Tom Campbell records his third adult duck, taking his tally for the season to two. Tom joins esteemed Linton alumni Ken Webb who scored 1210 runs for the club at an average of 20.51 across the 79 games he played throughout the 1970&#x27;s, and current players, Altus Diener and Blair Mundell.
+Finally in the Sunday 3rd XI fixture at Faversham there were two ducks, Alex Wade and Sam King both failed to trouble the scorers. Alex notches up a second for the season, his 14th Overall.  Alex joins the Taylor brothers, the Chairman and Alex Keeler, fine company to keep on 14 Ducks.  Sam king moves to 8 ducks overall joining rising star Thomas Mundell - whose fate has been changing and now has 8 ducks from 14 innings - 4 in a row without a duck.  This was Sam&#x27;s second duck of the season.</div></article><article id="r-2025-07-27-19" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>It&#x27;s been a while since we had cause for an update; I was just waiting on the Sunday Seconds being uploaded to report on the weekends ducktivities.</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 26 Jul 2025 – 27 Jul 2025</div><div class="dp-body">From the Top: Saturday 1s - Tom Campbell records his third adult duck, taking his tally for the season to two. Tom joins esteemed Linton alumni Ken Webb who scored 1210 runs for the club at an average of 20.51 across the 79 games he played throughout the 1970&#x27;s, and current players, Altus Diener and Blair Mundell.
 
 Saturday 2s recorded two ducks both Brandon Eloff and Praveen Tunga added to their season tallies. Taking them to 3 and 4 respectively.  Brandon now has 8 ducks in his Linton Career pulling alongside Mardey Castle and Martin Rivers.  Ron McCormick records the lowest percentage ducks having batted 152 times for his 8.  Ron escaped the dreaded duck for 10 seasons before finally falling for a nought against Headcorn in 2001.
 
@@ -1476,11 +1454,11 @@ Sunday 1s chased down a low total with several casualties including Ben Austin w
 
 In the Sunday 2s - Alex Daniels recorded his second duck of the season for Linton, (6th of the season across all games he has played; junior cricket and games for other clubs don&#x27;t count) this is his second adult duck in 3 innings so watch this space!
 
-Sunday 3s no ducks were recorded.</div></article><article id="r-2025-07-15-14" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆🦆 DUCK NEWS 🦆🦆</h2><span class="dp-badge">3 ducks</span></div><div class="dp-meta">Week of 11 Jul 2025 – 13 Jul 2025</div><div class="dp-body">Starting at the top with the most important ducks of the weekend, I secured my 49th Duck against Mersham Sports on Saturday, now dangerously close to the 50 Ducks milestone, moving to the most likely candidate to reach this milestone this season!  Tobey Castle also records a duck in this game, his 4th for the season and 33rd duck for Linton. He joins previous 1st XI captain Dan Thirkell on 33, now only 7 ducks away from joining this chat!
+Sunday 3s no ducks were recorded.</div></article><article id="r-2025-07-16-20" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆🦆 DUCK NEWS 🦆🦆</h2><span class="dp-badge">4 ducks</span></div><div class="dp-meta">Week of 12 Jul 2025 – 16 Jul 2025</div><div class="dp-body">Starting at the top with the most important ducks of the weekend, I secured my 49th Duck against Mersham Sports on Saturday, now dangerously close to the 50 Ducks milestone, moving to the most likely candidate to reach this milestone this season!  Tobey Castle also records a duck in this game, his 4th for the season and 33rd duck for Linton. He joins previous 1st XI captain Dan Thirkell on 33, now only 7 ducks away from joining this chat!
 
 Returning fan favourite Jonathan Sisely picked up a duck on Saturday in the 4s, moving to 9 ducks out of 26 innings. He joins John Bloomfield who played his games during the late 70&#x27;s and early 80&#x27;s racking up 9 ducks in 46 innings.
 
-No ducks in the T20 on Friday, the Saturday 2s, 3s or on Sunday! We have a lot more cricket happening this week, with matches tomorrow, Friday, Saturday and Sunday. So plenty of scope for those ducks to rack up.</div></article><article id="r-2025-07-08-15" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆🦆 DUCK NEWS 🦆🦆</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 5 Jul 2025 – 6 Jul 2025</div><div class="dp-body">In the Saturday 1st XI Alex keeler recorded his first duck of the season in 11 innings, and brings his Linton record up to 14 ducks across 148 innings operating at a 10% duck ratio. Alex joins the chairman Laurie Probert and Brothers Fred and George Taylor on 14 Ducks in the all time Stats.
+No ducks in the T20 on Friday, the Saturday 2s, 3s or on Sunday! We have a lot more cricket happening this week, with matches tomorrow, Friday, Saturday and Sunday. So plenty of scope for those ducks to rack up.</div></article><article id="r-2025-07-11-21" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆🦆 DUCK NEWS 🦆🦆</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 5 Jul 2025 – 11 Jul 2025</div><div class="dp-body">In the Saturday 1st XI Alex keeler recorded his first duck of the season in 11 innings, and brings his Linton record up to 14 ducks across 148 innings operating at a 10% duck ratio. Alex joins the chairman Laurie Probert and Brothers Fred and George Taylor on 14 Ducks in the all time Stats.
 
 Saturday 2s opened with Johan Eloff who recorded another duck to his linton Career making 10 Ducks in the all time stats, Johans 10 have come off 36 innings operating at 27% duck ratio.  Johan joins jack jenner and Jamie Ratcliffe on 10 ducks and has the highest duck ratio of the players on 10.
 
@@ -1490,9 +1468,7 @@ Henry Campbell adds another duck to his season, second in a row, 4 innings in a 
 
 Furthermore Praveen Tunga secured his 3rd duck of the season, 4th duck in the all time stats, with a ratio of 40%. Many players to choose from on 4 ducks such as active players - Alex Holt (20%), Harvey Lowe (21%).
 
-Only one team batted on sunday with the 2s match at linton being abandoned before the innings could start. At Borstal the sunday 1s managed a slow start falling to 58-5 before the rain came, within that period however Jordan Austin managed to survive 8 balls before nicking off and faling for his 3rd Duck of the season. Jordan (13%) is forging ahead towards 50 ducks and has become our favourite to reach the milestone next, having drawn level with me (15%). This is jordans second duck in a row but with penshurst unable to find a team for wednesday we will need to wait until the weekend to find out if Jordan will make it three in a row!</div></article><article id="r-2025-07-03-16" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆🦆Midweek duck update! 🦆🦆</h2><span class="dp-badge">1 duck</span></div><div class="dp-meta">Week of 2 Jul 2025</div><div class="dp-body">Jk avoided three in a row and REBOUNDED in style making 45 off 43 against Warlingham yesterday.
-
-Unfortunately for Jordan it was his turn  for a first baller, his second duck of the season and 47th for linton. Jordan equals Bob Arnold&#x27;s duck tally and is closing in on me!</div></article><article id="r-2025-06-30-17" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">8 ducks</span></div><div class="dp-meta">Week of 28 Jun 2025 – 29 Jun 2025</div><div class="dp-body">Leading by example Saturday 1s Skipper - Tobey Castle notched up his 3rd Duck of the season to edge closer to Toby Joseph who topped the duck Tallies after last weekend.  Tobey moves to #41 in the all time rankings, approaching former skipper Dan Thirkell who has 33 ducks.  Tobey on 32 ducks Sits alongside Ian Hollingworth.
+Only one team batted on sunday with the 2s match at linton being abandoned before the innings could start. At Borstal the sunday 1s managed a slow start falling to 58-5 before the rain came, within that period however Jordan Austin managed to survive 8 balls before nicking off and faling for his 3rd Duck of the season. Jordan (13%) is forging ahead towards 50 ducks and has become our favourite to reach the milestone next, having drawn level with me (15%). This is jordans second duck in a row but with penshurst unable to find a team for wednesday we will need to wait until the weekend to find out if Jordan will make it three in a row!</div></article><article id="r-2025-07-02-22" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">9 ducks</span></div><div class="dp-meta">Week of 28 Jun 2025 – 2 Jul 2025</div><div class="dp-body">Leading by example Saturday 1s Skipper - Tobey Castle notched up his 3rd Duck of the season to edge closer to Toby Joseph who topped the duck Tallies after last weekend.  Tobey moves to #41 in the all time rankings, approaching former skipper Dan Thirkell who has 33 ducks.  Tobey on 32 ducks Sits alongside Ian Hollingworth.
 
 The Saturday 2&#x27;s was disappointing for this group and had no ducks.
 
@@ -1508,7 +1484,15 @@ JK seems to be the duck omen at the minute with 4 in his Saturday Side and 3 in 
 
 Ian Lowe had another poor weekend with the bat moving to 3 for the season, and rapidly advancing in the all time stats, Ian joins teenage delinquent Harry Bee, and Gentleman cricketer David Lowen on 5 ducks. 
 
-With a midweek friendly scheduled for Wednesday this week can JK make it three in a row? &lt;This message was edited&gt;</div></article><article id="r-2025-06-23-18" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 21 Jun 2025 – 22 Jun 2025</div><div class="dp-body">An important weekend of Cricket has just been played with two of our members adding to their Tally and edging closer to their respective milestones, On Saturday Jordan recorded his first duck of the season, moving to 46 in the all time duck stats.  Jordan pulls up alongside Mike Elworthy better known for adding some spice to the beginning of Linton innings with his fiery stroke making. Jordan is now just 4 ducks away from joining Lukey, Tim and Rich P as the active players in the 50 ducks Club.
+With a midweek friendly scheduled for Wednesday this week can JK make it three in a row? &lt;This message was edited&gt;
+
+———
+
+🦆🦆Midweek duck update! 🦆🦆
+
+Jk avoided three in a row and REBOUNDED in style making 45 off 43 against Warlingham yesterday.
+
+Unfortunately for Jordan it was his turn  for a first baller, his second duck of the season and 47th for linton. Jordan equals Bob Arnold&#x27;s duck tally and is closing in on me!</div></article><article id="r-2025-06-22-23" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">6 ducks</span></div><div class="dp-meta">Week of 21 Jun 2025 – 22 Jun 2025</div><div class="dp-body">An important weekend of Cricket has just been played with two of our members adding to their Tally and edging closer to their respective milestones, On Saturday Jordan recorded his first duck of the season, moving to 46 in the all time duck stats.  Jordan pulls up alongside Mike Elworthy better known for adding some spice to the beginning of Linton innings with his fiery stroke making. Jordan is now just 4 ducks away from joining Lukey, Tim and Rich P as the active players in the 50 ducks Club.
 
 Sunday saw Rich P inch closer to an impressive milestone, now just one behind Jon Harris Rich sits alone on 94 Ducks - 6 away from joining Tim in the 100-club.
 
@@ -1516,7 +1500,7 @@ Other ducks across the matches saw both Kenny Liebenberg and Ian Bruce open thei
 
 Sundays game alongside Rich, Zach Wilde notched up his 11th Senior Duck - first for the season.  Zach joins Harrison Fermor and Sam Boyns from current players and Linton&#x27;s Kabaddi World Cup representative Tom Murphy, who claims Joe Denly is in.
 
-A further duck in this game was collected by Ian Lowe - Ian moves to 4 in the all time stats joining the infamous Fraggle (Will Bramley-Harker) who almost took a hat-trick in 2011 at knockholt, this would have been an extraordinary feat in itself - but was overshadowed on the day by Dom Dixon&#x27;s cradle antics, who took a ball to the dome then came back to play again with his dads lid on.</div></article><article id="r-2025-06-16-19" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">12 ducks</span></div><div class="dp-meta">Week of 14 Jun 2025 – 15 Jun 2025</div><div class="dp-body">There was an abundance of category ducks in action across the weekend with potentials for brother ducks, Jordan Austin &amp; Ben Austin (Sat and Sun), George &amp; Fred Taylor (Sat), Toby Joseph &amp; Andrew Joseph (Sun), , Christian Eloff &amp; Johan Eloff (Sun). And father and son duck combinations; Brandon Elof &amp; Johan Elof (Sat), Blair Mundell &amp; Reuben Mundell (Sat), Ian Lowe &amp; Harvey Lowe (Sun), Nick Tromp &amp; Divan Tromp (Sun), Nolan Wilde &amp; Zach Wilde.  Finally, Family of ducks contenders in Brandon Eloff and his two boys (Sun), Johan and Christian, Spencer Gray and his two boys, William &amp; James Gray (Sun). 
+A further duck in this game was collected by Ian Lowe - Ian moves to 4 in the all time stats joining the infamous Fraggle (Will Bramley-Harker) who almost took a hat-trick in 2011 at knockholt, this would have been an extraordinary feat in itself - but was overshadowed on the day by Dom Dixon&#x27;s cradle antics, who took a ball to the dome then came back to play again with his dads lid on.</div></article><article id="r-2025-06-15-24" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">12 ducks</span></div><div class="dp-meta">Week of 14 Jun 2025 – 15 Jun 2025</div><div class="dp-body">There was an abundance of category ducks in action across the weekend with potentials for brother ducks, Jordan Austin &amp; Ben Austin (Sat and Sun), George &amp; Fred Taylor (Sat), Toby Joseph &amp; Andrew Joseph (Sun), , Christian Eloff &amp; Johan Eloff (Sun). And father and son duck combinations; Brandon Elof &amp; Johan Elof (Sat), Blair Mundell &amp; Reuben Mundell (Sat), Ian Lowe &amp; Harvey Lowe (Sun), Nick Tromp &amp; Divan Tromp (Sun), Nolan Wilde &amp; Zach Wilde.  Finally, Family of ducks contenders in Brandon Eloff and his two boys (Sun), Johan and Christian, Spencer Gray and his two boys, William &amp; James Gray (Sun). 
 
 This shows a testament to a family club where everyone is getting involved.
 
@@ -1545,7 +1529,7 @@ Alex Nunn records a duck in this game also, bringing the duck tally to three in 
 
 3rd XI fixture at Rumwood v’s Rolvenden, Farhan Malik (Mo) and Alexander Daniels both fell for a duck, Mo moves to 2 for the season and overall joining Ex-Rumwood Refugee David Day, and Phillip Morrison brother of Stewart, who as brothers escaped the Two of a Quack Honours reel.  Alexander Daniels notched up his first duck of the season and all-time in senior cricket in his 3rd outing. Finally Christian Eloff, fell victim to the Duck, the only Elof not to trouble the scorer. 
 
-A weekend full of potential for high profile – Honour worthy ducks fell short.  A total of 11 ducks were seen moving the Linton Duck Tally for the season to 65.</div></article><article id="r-2025-06-13-20" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Cheeky update after last night&#x27;s t20.</h2><span class="dp-badge">1 duck</span></div><div class="dp-meta">Week of 12 Jun 2025</div><div class="dp-body">Brandon skied his first ball to deep mid on and recorded his second duck of the season, moving to 7 for.linton, joining local weather enthusiast Martin Rivers and absentee teen Theo &#x27;peanut&#x27; Clements. There are lots more players on 7 ducks, including 90s and noughties, legendary figures, Mike Caddick, and John Taylor. Recent tree abuser and now permanently excluded from the green party; Tom Roxburgh.</div></article><article id="r-2025-06-09-21" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News from the weekend 🦆  Wet weather is great for duck hunting, two fixtures out of the four were fulfilled Saturday (5 ducks), and both fixtures on Sunday (4 ducks) fulfilled with a total of 9 ducks being recorded, bringing the total for the season up to 56 ducks.</h2><span class="dp-badge">9 ducks</span></div><div class="dp-meta">Week of 7 Jun 2025 – 8 Jun 2025</div><div class="dp-body">Breaking this down per game:
+A weekend full of potential for high profile – Honour worthy ducks fell short.  A total of 11 ducks were seen moving the Linton Duck Tally for the season to 65.</div></article><article id="r-2025-06-12-25" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News from the weekend 🦆  Wet weather is great for duck hunting, two fixtures out of the four were fulfilled Saturday (5 ducks), and both fixtures on Sunday (4 ducks) fulfilled with a total of 9 ducks being recorded, bringing the total for the season up to 56 ducks.</h2><span class="dp-badge">10 ducks</span></div><div class="dp-meta">Week of 7 Jun 2025 – 12 Jun 2025</div><div class="dp-body">Breaking this down per game:
 1st XI – Away @ Sibton Park – 2 ducks
 Fred Taylor fell for his 3rd consecutive duck of the season, he moves onto 14 ducks joining his brother (George). 
 Tom Campbell records his second adult duck after opening his account last season at harbledown – both his ducks have been part of a 5-for for the bowlers, B.Allon @ Sibton &amp; Jan Maroofkhail @ Harbledown.
@@ -1561,7 +1545,13 @@ Sunday Second XI, away to Holcombe and Blue Bell Hill.
 Alex Holt and Josh Gurney Quacked up for their 4th and 5th ducks respectively.
 Alex opened his account for the season with his first duck, having escaped with a 0* against Cowdrey earlier in April.  Alex joins Salix Bat maker Andrew Kember on 4 ducks. Andy played 1 season for Linton in 1985 scoring 51 runs at an average of 5.10.
 Josh Gurney joins David Lowen on 5 ducks, David can still be seen turning out for Linton and may yet add to his tally.  Other 5 duck careers at Linton include the notorious Harry Bee, whose first Adult game for Linton snagged him his premier duck.  After leaving Linton Harry has played for a number of other clubs around the Kent league circuit most recently Sandwich Town.
-Given we are only in June and have already smashed the highest Duck tally for any historical season, I may need to do some more analysis.  We are fielding more teams this year than ever before and that is obviously resulting in more ducks.  May need to work out the Ducks v’s Players in a season to give a ratio figure in which to compare it against to previous seasons.</div></article><article id="r-2025-06-02-22" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News 🦆</h2><span class="dp-badge">8 ducks</span></div><div class="dp-meta">Week of 31 May 2025 – 1 Jun 2025</div><div class="dp-body">Nick Tromp fell for his second duck this season on saturday against Bredgar.  This is Nicks 13th Duck for Linton. He&#x27;s in good company as he joins other active players such as Alex Wade and Alex Keeler.
+Given we are only in June and have already smashed the highest Duck tally for any historical season, I may need to do some more analysis.  We are fielding more teams this year than ever before and that is obviously resulting in more ducks.  May need to work out the Ducks v’s Players in a season to give a ratio figure in which to compare it against to previous seasons.
+
+———
+
+Cheeky update after last night&#x27;s t20.
+
+Brandon skied his first ball to deep mid on and recorded his second duck of the season, moving to 7 for.linton, joining local weather enthusiast Martin Rivers and absentee teen Theo &#x27;peanut&#x27; Clements. There are lots more players on 7 ducks, including 90s and noughties, legendary figures, Mike Caddick, and John Taylor. Recent tree abuser and now permanently excluded from the green party; Tom Roxburgh.</div></article><article id="r-2025-06-01-26" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News 🦆</h2><span class="dp-badge">8 ducks</span></div><div class="dp-meta">Week of 31 May 2025 – 1 Jun 2025</div><div class="dp-body">Nick Tromp fell for his second duck this season on saturday against Bredgar.  This is Nicks 13th Duck for Linton. He&#x27;s in good company as he joins other active players such as Alex Wade and Alex Keeler.
 
 Brandon bagged himself his 6th Duck on Saturday, joining some well known and some infamous players from past and present, other players accruing 6 ducks in their Linton career; the notorious Adam Wright, and Abishek Pushpavinothan who is yet to play again this season.  Other notable&#x27;s include the only man i know to wear a box while in the outfield Iain Cardew, and a couple of current players, Ryan Silk and Henry Campbell.
 
@@ -1581,15 +1571,7 @@ Although Freddie was the only Linton Duck to fall against Bapchild it would be r
 
 that&#x27;s a wrap for Saturday Ducks. 
 
-Sundays ducks were fewer (thankfully) - No ducks were hunted in the 2nd XI game against New Ifield, but an old duck emerged at Stone, Ian Hollingworth recorded his first duck of the season and now stands alone in the Linton park duck archives on 32 ducks.</div></article><article id="r-2025-05-27-23" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>As you may have inferred from JKs message yesterday, there was 1 duck from this group against the dissidents.</h2><span class="dp-badge">2 ducks</span></div><div class="dp-meta">Week of 26 May 2025</div><div class="dp-body">@Jannie Karasellos  moves to 44 ducks, bringing him level with @Mark Christmas.
-
-John had survived a couple of attempts of Dan Baker trying to run him out but resolutely stood his ground before nudging one back to Dave Charlton in a caught and bowled.
-
-Extra bit of duck trivia, Dave used to play for linton and accrued 25 ducks in 224 innings during his playing career.
-
-One other duck yesterday for Dr Farhan  Malik (Mo) his first duck for Linton from 6 innings.
-
-Other frugal notables on 1 duck throughout their playing career include Maurice Fenner who played from 1940 to 1963 for the club. Maurice&#x27;s duck came in 1958 in a friendly against Folkestone.</div></article><article id="r-2025-05-25-24" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News 🦆</h2><span class="dp-badge">3 ducks</span></div><div class="dp-meta">Week of 24 May 2025 – 25 May 2025</div><div class="dp-body">Fred taylor earned his first duck of the season in the 1st XI game against Addington.  Fred moves to 12 ducks alongside Toby Joseph and Nick Tromp.
+Sundays ducks were fewer (thankfully) - No ducks were hunted in the 2nd XI game against New Ifield, but an old duck emerged at Stone, Ian Hollingworth recorded his first duck of the season and now stands alone in the Linton park duck archives on 32 ducks.</div></article><article id="r-2025-05-26-27" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 Duck News 🦆</h2><span class="dp-badge">5 ducks</span></div><div class="dp-meta">Week of 24 May 2025 – 26 May 2025</div><div class="dp-body">Fred taylor earned his first duck of the season in the 1st XI game against Addington.  Fred moves to 12 ducks alongside Toby Joseph and Nick Tromp.
 
 Richard Piper and.Aaron Hughes both secured their second ducks for the season yesterday in the second XI game against bapchild. Moving to 93 and 20 respectively in the all.time stats.
 
@@ -1597,7 +1579,30 @@ Richard moves past Trevor Back (92) and is alone on 93.
 
 Aaron keeps good company with James Piper and Nolan, who scored 70, opening the batting in the 4s yesterday.
 
-El presidente will be back in action today, after narrowly escaping another duck yesterday falling on 2, fingers crossed for #52 lukey!</div></article><article id="r-2025-05-19-25" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2></div><div class="dp-meta">Week of 19 May 2025</div><div class="dp-body">Theo Clements recorded his first duck of the season yesterday at Frindsbury. 10th duck overall in 83 innings.
+El presidente will be back in action today, after narrowly escaping another duck yesterday falling on 2, fingers crossed for #52 lukey!
+
+———
+
+As you may have inferred from JKs message yesterday, there was 1 duck from this group against the dissidents. 
+
+@Jannie Karasellos  moves to 44 ducks, bringing him level with @Mark Christmas.
+
+John had survived a couple of attempts of Dan Baker trying to run him out but resolutely stood his ground before nudging one back to Dave Charlton in a caught and bowled.
+
+Extra bit of duck trivia, Dave used to play for linton and accrued 25 ducks in 224 innings during his playing career.
+
+One other duck yesterday for Dr Farhan  Malik (Mo) his first duck for Linton from 6 innings.
+
+Other frugal notables on 1 duck throughout their playing career include Maurice Fenner who played from 1940 to 1963 for the club. Maurice&#x27;s duck came in 1958 in a friendly against Folkestone.</div></article><article id="r-2025-05-18-28" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>🦆 DUCK NEWS 🦆</h2><span class="dp-badge">3 ducks</span></div><div class="dp-meta">Week of 17 May 2025 – 18 May 2025</div><div class="dp-body">Toby Joseph recorded his 12th duck moving level with nick tromp in active players.
+
+Blast from the past on 12 ducks include:
+Gareth Davies
+Adrian caddick 
+Lewis Burnham
+
+———
+
+Theo Clements recorded his first duck of the season yesterday at Frindsbury. 10th duck overall in 83 innings.
 
 Blast from the past on 10 ducks include:
 Jamie Ratcliffe and Jack Jenner
@@ -1610,14 +1615,11 @@ Nolan moves past Aaron Hughes to 20 ducks for linton in 132 innings. Only one ot
 
 For the sub category of 50 ducks before a 50, we have 2 inducktees into the hall of fame:
 Simon Thirkell 60 ducks with a high score of.48
-Ian Brattle 51 ducks with a high score of 33</div></article><article id="r-2025-05-18-26" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Toby Joseph recorded his 12th duck moving level with nick tromp in active players.</h2><span class="dp-badge">3 ducks</span></div><div class="dp-meta">Week of 17 May 2025 – 18 May 2025</div><div class="dp-body">Blast from the past on 12 ducks include:
-Gareth Davies
-Adrian caddick 
-Lewis Burnham</div></article><article id="r-2025-05-16-27" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Lukey was feeling lonely in the 50 ducks club so wanted to remind all those who were close...</h2><span class="dp-badge">14 ducks</span></div><div class="dp-meta">Week of 10 May 2025 – 11 May 2025</div><div class="dp-body">LUKEY THE PRESIDENT 51 DUCKS
+Ian Brattle 51 ducks with a high score of 33</div></article><article id="r-2025-05-11-29" data-season="2025" class="dp-card"><div class="dp-card-h"><h2>Lukey was feeling lonely in the 50 ducks club so wanted to remind all those who were close...</h2><span class="dp-badge">14 ducks</span></div><div class="dp-meta">Week of 10 May 2025 – 11 May 2025</div><div class="dp-body">LUKEY THE PRESIDENT 51 DUCKS
 Tom B - 48 linton ducks
 Jordan- 45 ducks
 Mark - 44 ducks
-Martin and JK - tied on 43 ducks</div></article></div><div id="dp-empty" hidden></div><p class="dp-foot">28 reports · updated 20 July 2026 at 08:33</p><script>
+Martin and JK - tied on 43 ducks</div></article></div><div id="dp-empty" hidden></div></main></div><p class="dp-foot">30 reports · updated 20 July 2026 at 08:48</p><script>
 (function(){
   var q=document.getElementById('dp-q');
   var arts=[].slice.call(document.querySelectorAll('#dp-feed article'));
@@ -1631,13 +1633,13 @@ Martin and JK - tied on 43 ducks</div></article></div><div id="dp-empty" hidden>
       var any=arts.some(function(a){return a.dataset.season===h.dataset.season && a.style.display!=='none';});
       h.style.display=any?'':'none';
     });
-    document.querySelectorAll('.dp-nav li').forEach(function(li){
+    document.querySelectorAll('.dp-side li').forEach(function(li){
       var tgt=document.querySelector(li.querySelector('a').getAttribute('href'));
       li.style.display=(tgt && tgt.style.display!=='none')?'':'none';
     });
-    document.querySelectorAll('.dp-nav .dp-snav').forEach(function(b){
+    document.querySelectorAll('.dp-side details.dp-snav').forEach(function(b){
       var any=[].some.call(b.querySelectorAll('li'),function(li){return li.style.display!=='none';});
-      b.style.display=any?'':'none';
+      b.style.display=any?'':'none'; if(any && t)b.open=true;
     });
     document.getElementById('dp-count').textContent=t?(shown+' of '+arts.length+' reports'):(arts.length+' reports');
     document.getElementById('dp-empty').hidden=!(t&&shown===0);
