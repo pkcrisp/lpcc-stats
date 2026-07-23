@@ -74,6 +74,17 @@
              + r.f50+'</td><td>'+r.f100+'</td><td>'+r.ducks+'</td></tr>'; }).join('')
          + '</tbody></table></div></details>';
     }
+    var bo = (d.byorder||[]).filter(function(r){return r.inns;});
+    if (bo.length){
+      h += '<details class="pc-group pc-det"><summary>🎚️ By bowling order</summary>'
+         + '<div class="pc-tw"><table class="pc-tbl">'
+         + '<thead><tr><th>Order</th><th>Inns</th><th>Overs</th><th>Wkts</th><th>Runs</th>'
+         + '<th>Avg</th><th>Econ</th><th>Mdns</th></tr></thead><tbody>'
+         + bo.map(function(r){ return '<tr><td>'+(r.seq===1?"Open":"#"+r.seq)+'</td><td>'
+             + r.inns+'</td><td>'+r.overs+'</td><td>'+r.wkts+'</td><td>'+r.runs+'</td><td>'
+             + num(r.avg)+'</td><td>'+num(r.econ)+'</td><td>'+r.maidens+'</td></tr>'; }).join('')
+         + '</tbody></table></div></details>';
+    }
     h += '<a class="pc-full" target="_blank" rel="noopener" href="'+STATS_URL
        + '#p='+encodeURIComponent(who)+'">Full match-by-match record on the Statistics page →</a>';
     return h;
