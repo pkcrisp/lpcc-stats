@@ -58,6 +58,7 @@ border-radius:50%;font-size:.72rem;font-weight:700;background:#eef3f0;color:#3a4
 </style></head><body><div class="wrap" id="app">Loading scorecard…</div>
 <script src="players.js"></script>
 <script>
+var HAND={"Benjamin Austin":"L"};
 var P = window.LPCC_PLAYERS||{}, idx={};
 function norm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
 Object.keys(P).forEach(function(n){idx[norm(n)]=n;});
@@ -158,6 +159,99 @@ function ballLog(d){
  return h+'</details>';
 }
 
+function runColor(r){return r>=6?'#8e44ad':r>=4?'#1769d1':r>=2?'#12a06a':r>=1?'#0a5b3a':'#c9d3cd';}
+function manhattan(d){
+ if(!d.manh||!d.manh.length)return '';
+ var s='<div class="sub">📊 Manhattan — runs per over</div>';
+ d.manh.forEach(function(ovs,i){
+  if(!ovs.length)return;
+  var W=880,H=170,ml=32,mr=10,mt=10,mb=22,pw=W-ml-mr,ph=H-mt-mb,n=ovs.length;
+  var maxr=Math.max.apply(null,ovs.map(function(o){return o[1];}))||1;
+  var bw=pw/n*0.8,gap=pw/n*0.2;
+  s+='<div style="color:var(--green);font-size:.8rem;font-weight:700;margin:6px 0 2px">'+(d.inns[i]?esc(d.inns[i].team):'Innings '+(i+1))+'</div>';
+  s+='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
+  for(var g=0;g<=2;g++){var yy=mt+ph-ph*g/2;s+='<line x1="'+ml+'" y1="'+yy+'" x2="'+(ml+pw)+'" y2="'+yy+'" stroke="#eceeec"/><text x="'+(ml-5)+'" y="'+(yy+4)+'" text-anchor="end" font-size="9" fill="#8a978f">'+Math.round(maxr*g/2)+'</text>';}
+  ovs.forEach(function(o,j){var bh=ph*o[1]/maxr,x=ml+pw*j/n+gap/2,y=mt+ph-bh;
+   s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" fill="'+(o[2]?'#d9322a':'#0a5b3a')+'" rx="1"/>';
+   if(o[2])for(var k=0;k<o[2];k++)s+='<circle cx="'+(x+bw/2).toFixed(1)+'" cy="'+(y-4-k*5).toFixed(1)+'" r="1.8" fill="#d9322a"/>';
+  });
+  s+='</svg>';
+ });
+ return s;
+}
+function wheelSvg(shots,team){
+ var R=150,cx=R+10,cy=R+10,sz=2*(R+10);
+ var s='<svg viewBox="0 0 '+sz+' '+sz+'" style="width:100%;max-width:340px;height:auto;display:block;margin:0 auto">';
+ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#f2f8f4" stroke="#cfe0d6"/>';
+ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.62)+'" fill="none" stroke="#e0ebe4" stroke-dasharray="3 4"/>';
+ s+='<line x1="'+cx+'" y1="'+(cy-R)+'" x2="'+cx+'" y2="'+(cy+R)+'" stroke="#e0ebe4"/>';
+ s+='<line x1="'+(cx-R)+'" y1="'+cy+'" x2="'+(cx+R)+'" y2="'+cy+'" stroke="#e0ebe4"/>';
+ var maxl=Math.max.apply(null,shots.map(function(p){return p[1];}))||60;
+ shots.forEach(function(p){var rad=p[0]*Math.PI/180,len=R*Math.min(1,p[1]/maxl);
+  var x=cx+len*Math.sin(rad),y=cy-len*Math.cos(rad);
+  s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+runColor(p[2])+'" stroke-width="'+(p[2]>=4?2.2:1.3)+'" opacity="0.8"/>';
+  if(p[2]>=4)s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+runColor(p[2])+'"/>';
+ });
+ s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#1a221e"/></svg>';
+ return '<div style="flex:1 1 300px"><div style="text-align:center;color:var(--green);font-weight:700;font-size:.82rem;margin-bottom:4px">'+esc(team)+'</div>'+s+'</div>';
+}
+function handOf(name){ // loose match abbreviated 'J Austin' to a HAND full name
+ var n=norm(name);if(HAND[name])return HAND[name];
+ var parts=n.split(' ');if(parts.length<2)return null;
+ var sur=parts[parts.length-1],ini=parts[0][0];
+ var keys=Object.keys(HAND);
+ for(var i=0;i<keys.length;i++){var kn=norm(keys[i]).split(' ');
+  if(kn[kn.length-1]===sur&&kn[0][0]===ini)return HAND[keys[i]];}
+ return null;
+}
+function wagonWheel(d){
+ if(!d.shots||!d.shots.some(function(a){return a&&a.length;}))return '';
+ var names=Array.prototype.concat.apply([],d.shots.map(function(a){return a.map(function(p){return p[3];});}));
+ var uniq=names.filter(function(v,i){return v&&names.indexOf(v)===i;}).sort();
+ var h='<details class="pc-det" open><summary>🎯 Wagon wheel</summary>'
+   +'<p style="color:var(--mut);font-size:.8rem;margin:6px 0">Every scoring shot, by direction and distance — '
+   +'<span style="color:#0a5b3a">1-3</span>, <span style="color:#1769d1">four</span>, <span style="color:#8e44ad">six</span>. '
+   +'<select id="ww-bat" style="padding:4px 8px;border:1px solid #cdd8d1;border-radius:6px"><option value="">All batters</option>'
+   +uniq.map(function(n){var hd=handOf(n);return '<option value="'+esc(n)+'">'+esc(n)+(hd?' ('+hd+'H)':'')+'</option>';}).join('')+'</select> '
+   +'<label style="font-size:.8rem;color:var(--mut)"><input type="checkbox" id="ww-mirror"> ↔ left-hander view</label></p>'
+   +'<div id="ww-wrap" style="display:flex;flex-wrap:wrap;gap:16px"></div></details>';
+ return h;
+}
+function drawWheels(d,filter){
+ var wrap=document.getElementById('ww-wrap');if(!wrap)return;
+ var mir=document.getElementById('ww-mirror'),mirror=mir&&mir.checked;
+ wrap.innerHTML=d.shots.map(function(a,i){
+  var f=(a||[]).filter(function(p){return !filter||p[3]===filter;});
+  if(mirror)f=f.map(function(p){return [(360-p[0])%360,p[1],p[2],p[3]];});
+  return f.length?wheelSvg(f,(d.inns[i]?d.inns[i].team:'Innings '+(i+1))+' · '+f.length+' shots'):'';
+ }).join('');
+}
+function scoringZones(d){
+ if(!d.shots||!d.shots.some(function(a){return a&&a.length;}))return '';
+ var N=16;
+ var h='<details class="pc-det"><summary>🔥 Scoring zones</summary>'
+   +'<p style="color:var(--mut);font-size:.8rem;margin:6px 0">Where the runs came from — the field split into 16, shaded by runs scored into each zone.</p>'
+   +'<div style="display:flex;flex-wrap:wrap;gap:16px">';
+ d.shots.forEach(function(a,idx){
+  if(!a||!a.length)return;
+  var zone=new Array(N).fill(0),max=0;
+  a.forEach(function(p){var z=Math.floor(((p[0]%360)/360)*N)%N;zone[z]+=p[2];if(zone[z]>max)max=zone[z];});
+  var R=150,cx=R+10,cy=R+10,sz=2*(R+10);
+  var s='<svg viewBox="0 0 '+sz+' '+sz+'" style="width:100%;max-width:340px;height:auto;display:block;margin:0 auto">';
+  for(var z=0;z<N;z++){
+   var a0=(z/N)*2*Math.PI,a1=((z+1)/N)*2*Math.PI,t=max?zone[z]/max:0;
+   var x0=cx+R*Math.sin(a0),y0=cy-R*Math.cos(a0),x1=cx+R*Math.sin(a1),y1=cy-R*Math.cos(a1);
+   var bg='rgba(217,50,42,'+(0.08+0.85*t).toFixed(2)+')';
+   s+='<path d="M'+cx+','+cy+' L'+x0.toFixed(1)+','+y0.toFixed(1)+' A'+R+','+R+' 0 0 1 '+x1.toFixed(1)+','+y1.toFixed(1)+' Z" fill="'+(zone[z]?bg:'#f4f7f5')+'" stroke="#fff"/>';
+   if(zone[z]){var am=(a0+a1)/2,lx=cx+R*0.66*Math.sin(am),ly=cy-R*0.66*Math.cos(am);
+    s+='<text x="'+lx.toFixed(1)+'" y="'+(ly+3).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+(t>0.5?'#fff':'#7a2a22')+'">'+zone[z]+'</text>';}
+  }
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#1a221e"/></svg>';
+  h+='<div style="flex:1 1 300px"><div style="text-align:center;color:var(--green);font-weight:700;font-size:.82rem;margin-bottom:4px">'+(d.inns[idx]?esc(d.inns[idx].team):'Innings '+(idx+1))+'</div>'+s+'</div>';
+ });
+ return h+'</div></details>';
+}
+
 function render(d){
  var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
  var h='<a class="back" href="javascript:history.back()">← Back</a>'
@@ -166,6 +260,9 @@ function render(d){
   +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+'</div>';
  h+=ptsChips(d);
  h+=worm(d);
+ h+=manhattan(d);
+ h+=wagonWheel(d);
+ h+=scoringZones(d);
  h+=ballLog(d);
  d.inns.forEach(function(inn){
   var tot=(inn.total!=null?inn.total:'-')+(inn.wkts!=null&&String(inn.wkts)!=='10'?'/'+inn.wkts:'')
@@ -178,6 +275,10 @@ function render(d){
    +'<a href="https://lintonpark.play-cricket.com/website/results/'+encodeURIComponent(d.id)+'" target="_blank" rel="noopener">view on Play-Cricket ↗</a></p>';
  document.getElementById('app').innerHTML=h;
  document.title=(d.home||'')+' v '+(d.away||'')+' — Scorecard';
+ if(d.shots){drawWheels(d,'');var sel=document.getElementById('ww-bat'),mir=document.getElementById('ww-mirror');
+  if(sel)sel.addEventListener('change',function(){
+   var hd=handOf(this.value);if(mir&&this.value)mir.checked=(hd==='L');drawWheels(d,this.value);});
+  if(mir)mir.addEventListener('change',function(){drawWheels(d,sel?sel.value:'');});}
 }
 
 var mid=qs('m');
