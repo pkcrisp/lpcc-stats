@@ -36,6 +36,21 @@ letter-spacing:.5px;font-weight:700}
 .pc{color:var(--mut);font-size:.8rem}
 svg text{font-family:Arial}
 .lpcc-pl{cursor:pointer;border-bottom:1px dotted var(--green)}
+.pc-det{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:0 0 16px}
+.pc-det>summary{cursor:pointer;color:var(--green);font-weight:700;text-transform:uppercase;
+font-size:.72rem;letter-spacing:.5px;list-style:none;display:flex;align-items:center}
+.pc-det>summary::after{content:"▸";margin-left:auto;transition:transform .15s}
+.pc-det[open]>summary::after{transform:rotate(90deg)}
+.bl-inn h4{color:var(--green);margin:12px 0 6px;font-size:.9rem}
+.bl-ov{display:flex;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid var(--stripe);flex-wrap:wrap}
+.bl-on{font-weight:700;color:var(--mut);font-size:.78rem;min-width:42px}
+.bl-bw{color:var(--green);font-size:.8rem;min-width:110px}
+.bl-balls{display:flex;gap:4px;flex-wrap:wrap}
+.bt{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
+border-radius:50%;font-size:.72rem;font-weight:700;background:#eef3f0;color:#3a463f;padding:0 4px}
+.bt-w{background:var(--red);color:#fff}.bt-4{background:#1769d1;color:#fff}
+.bt-6{background:#8e44ad;color:#fff}.bt-x{background:#fbe6c8;color:#7a5a00}
+.bt-r{background:#d7ece0;color:var(--green)}.bt-0{background:#eef3f0;color:#9aa8a0}
 </style></head><body><div class="wrap" id="app">Loading scorecard…</div>
 <script src="players.js"></script>
 <script>
@@ -88,19 +103,38 @@ function ptsChips(d){
  return out;
 }
 function worm(d){
- if(!d.worm)return '';var W=880,H=240,ml=38,mr=16,mt=12,mb=26,pw=W-ml-mr,ph=H-mt-mb;
- var inns=Object.keys(d.worm),cols=['#0a5b3a','#d9322a'],maxo=0,maxr=0;
- inns.forEach(function(k){d.worm[k].forEach(function(p){if(p[0]>maxo)maxo=p[0];if(p[1]>maxr)maxr=p[1];});});
+ if(!d.worm||!d.worm.length)return '';var W=880,H=240,ml=38,mr=16,mt=12,mb=26,pw=W-ml-mr,ph=H-mt-mb;
+ var cols=['#0a5b3a','#d9322a'],maxo=0,maxr=0;
+ d.worm.forEach(function(line){line.forEach(function(p){if(p[0]>maxo)maxo=p[0];if(p[1]>maxr)maxr=p[1];});});
  if(!maxo||!maxr)return '';
  function x(o){return ml+pw*o/maxo;}function y(r){return mt+ph-ph*r/maxr;}
  var s='<div class="sub">🪱 The run-worm</div><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
  for(var g=0;g<=4;g++){var yy=mt+ph-ph*g/4;s+='<line x1="'+ml+'" y1="'+yy+'" x2="'+(ml+pw)+'" y2="'+yy+'" stroke="#eceeec"/>'
    +'<text x="'+(ml-5)+'" y="'+(yy+4)+'" text-anchor="end" font-size="10" fill="#8a978f">'+Math.round(maxr*g/4)+'</text>';}
- inns.forEach(function(k,i){var pts=d.worm[k].map(function(p){return x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1);}).join(' ');
+ d.worm.forEach(function(line,i){var pts=line.map(function(p){return x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1);}).join(' ');
    s+='<polyline points="'+pts+'" fill="none" stroke="'+cols[i%2]+'" stroke-width="2.5"/>';
-   var last=d.worm[k][d.worm[k].length-1];
+   var last=line[line.length-1];
    s+='<text x="'+(x(last[0])-4)+'" y="'+(y(last[1])-6)+'" font-size="11" fill="'+cols[i%2]+'" text-anchor="end" font-weight="700">'+(d.inns[i]?esc(d.inns[i].team):'')+'</text>';});
  return s+'</svg>';
+}
+function tokCls(t){
+ if(t==='W')return 'bt-w';if(t==='•'||t==='0')return 'bt-0';
+ if(/nb|wd|b$/.test(t))return 'bt-x';if(t==='4'||t==='6')return 'bt-'+t;return 'bt-r';
+}
+function ballLog(d){
+ if(!d.balls||!d.balls.length)return '';
+ var h='<details class="pc-det"><summary>🏏 Ball-by-ball</summary>';
+ d.balls.forEach(function(inn,i){
+  h+='<div class="bl-inn"><h4>'+(d.inns[i]?esc(d.inns[i].team):'Innings '+(i+1))+'</h4>';
+  inn.forEach(function(o){
+   h+='<div class="bl-ov"><span class="bl-on">Ov '+o.ov+'</span>'
+     +'<span class="bl-bw">'+plink(o.bowl)+'</span><span class="bl-balls">'
+     +o.t.map(function(t){return '<span class="bt '+tokCls(t)+'">'+esc(t)+'</span>';}).join('')
+     +'</span></div>';
+  });
+  h+='</div>';
+ });
+ return h+'</details>';
 }
 
 function render(d){
@@ -111,6 +145,7 @@ function render(d){
   +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+'</div>';
  h+=ptsChips(d);
  h+=worm(d);
+ h+=ballLog(d);
  d.inns.forEach(function(inn){
   var tot=(inn.total!=null?inn.total:'-')+(inn.wkts!=null&&String(inn.wkts)!=='10'?'/'+inn.wkts:'')
     +(inn.overs?' ('+inn.overs+' ov)':'');
