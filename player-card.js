@@ -29,6 +29,22 @@
   }
 
   function num(v){ return (v===null||v===undefined) ? '–' : v; }
+  function rcol(r){return r>=6?'#8e44ad':r>=4?'#1769d1':r>=2?'#12a06a':r>=1?'#0a5b3a':'#c9d3cd';}
+  function pcWheel(shots, mirror){
+    var R=140,cx=R+8,cy=R+8,sz=2*(R+8);
+    var maxl=0; shots.forEach(function(p){if(p[1]>maxl)maxl=p[1];}); maxl=maxl||60;
+    var s='<svg viewBox="0 0 '+sz+' '+sz+'" style="width:100%;max-width:320px;height:auto;display:block;margin:0 auto">';
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#f2f8f4" stroke="#cfe0d6"/>';
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.6)+'" fill="none" stroke="#e0ebe4" stroke-dasharray="3 4"/>';
+    s+='<line x1="'+cx+'" y1="'+(cy-R)+'" x2="'+cx+'" y2="'+(cy+R)+'" stroke="#e0ebe4"/>';
+    s+='<line x1="'+(cx-R)+'" y1="'+cy+'" x2="'+(cx+R)+'" y2="'+cy+'" stroke="#e0ebe4"/>';
+    shots.forEach(function(p){var ang=mirror?(360-p[0])%360:p[0],rad=ang*Math.PI/180,len=R*Math.min(1,p[1]/maxl);
+      var x=cx+len*Math.sin(rad),y=cy-len*Math.cos(rad);
+      s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+rcol(p[2])+'" stroke-width="'+(p[2]>=4?1.8:1)+'" opacity="0.7"/>';
+    });
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#1a221e"/></svg>';
+    return s;
+  }
   // a heat strip: one cell per slot 1..n, shaded by share of innings, count inside
   function heat(rows, key, n, label1){
     var by = {}, max = 0;
@@ -103,6 +119,15 @@
              + r.inns+'</td><td>'+r.overs+'</td><td>'+r.wkts+'</td><td>'+r.runs+'</td><td>'
              + num(r.avg)+'</td><td>'+num(r.econ)+'</td><td>'+r.maidens+'</td></tr>'; }).join('')
          + '</tbody></table></div></details>';
+    }
+    var sh=(d.shots||[]);
+    if(sh.length>=8){
+      var hd=d.hand, mir=(hd==='L');
+      h += '<details class="pc-det"><summary>🎯 Career wagon wheel</summary>'
+         + '<p style="color:#64716a;font-size:.78rem;margin:6px 0">'+sh.length+' scoring shots '
+         + '(electronic era)'+(hd?' · '+hd+'H bat':'')+' — <span style="color:#0a5b3a">1-3</span>, '
+         + '<span style="color:#1769d1">four</span>, <span style="color:#8e44ad">six</span>.</p>'
+         + pcWheel(sh, mir) + '</details>';
     }
     h += '<a class="pc-full" target="_blank" rel="noopener" href="'+STATS_URL
        + '#p='+encodeURIComponent(who)+'">Full match-by-match record on the Statistics page →</a>';
