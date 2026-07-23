@@ -1,0 +1,135 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scorecard — Linton Park CC</title>
+<link rel="stylesheet" href="enhance.css">
+<style>
+:root{--green:#0a5b3a;--red:#d9322a;--ink:#1a221e;--mut:#64716a;--line:#e1e7e3;--stripe:#f6faf7}
+*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+margin:0;background:#eef3f0}
+a{color:var(--green)}
+.wrap{max-width:960px;margin:0 auto;padding:16px 18px}
+.hero{background:linear-gradient(135deg,#0a5b3a,#12a06a);color:#fff;border-radius:16px;
+padding:20px 22px;margin:0 0 16px}
+.hero h1{margin:0;font-size:1.4rem}.hero p{margin:.4em 0 0;opacity:.94;font-size:.9rem}
+.res{display:inline-block;margin-top:8px;background:rgba(255,255,255,.2);border-radius:8px;
+padding:4px 12px;font-weight:700;font-size:.85rem}
+.inn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px}
+.inn h2{margin:0 0 2px;color:var(--green);font-size:1.1rem}
+.inn .tot{font-weight:700;font-size:1.05rem;margin:0 0 10px;color:var(--ink)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+th{background:var(--green);color:#fff;text-align:right;padding:6px 8px;font-size:.68rem;
+text-transform:uppercase;letter-spacing:.4px}
+th:first-child,td:first-child{text-align:left}
+td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+tbody tr:nth-child(even) td{background:var(--stripe)}
+.out{color:var(--mut);font-size:.82rem;text-align:left}
+.duck td{color:var(--red)}
+.duck .dk{font-weight:700}
+.extras td{color:var(--mut);font-style:italic}
+.sub{color:var(--green);margin:14px 0 6px;font-size:.72rem;text-transform:uppercase;
+letter-spacing:.5px;font-weight:700}
+.pts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0}
+.chip{background:#eef6f1;border:1px solid #cfe6da;border-radius:12px;padding:2px 9px;font-size:.78rem}
+.chip b{color:var(--green)}
+.fow{color:var(--mut);font-size:.82rem;margin:8px 0 0;line-height:1.7}
+.back{display:inline-block;margin:0 0 12px;text-decoration:none;font-weight:700}
+.pc{color:var(--mut);font-size:.8rem}
+svg text{font-family:Arial}
+.lpcc-pl{cursor:pointer;border-bottom:1px dotted var(--green)}
+</style></head><body><div class="wrap" id="app">Loading scorecard…</div>
+<script src="players.js"></script>
+<script>
+var P = window.LPCC_PLAYERS||{}, idx={};
+function norm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+Object.keys(P).forEach(function(n){idx[norm(n)]=n;});
+function esc(s){return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function plink(name){var w=idx[norm(name)];
+ return w ? '<a class="lpcc-pl" data-p="'+esc(w)+'">'+esc(name)+'</a>' : esc(name);}
+function ov(o){return (o===null||o===undefined||o==='')?'-':o;}
+function qs(k){return new URLSearchParams(location.search).get(k);}
+
+function battingTbl(inn){
+ var h='<table><thead><tr><th>Batter</th><th></th><th>R</th><th>B</th><th>4s</th><th>6s</th></tr></thead><tbody>';
+ inn.bat.forEach(function(b){
+  var duck=b[7]?' class="duck"':'';
+  h+='<tr'+duck+'><td>'+plink(b[1])+(b[7]?' <span class="dk">🦆</span>':'')+'</td>'
+    +'<td class="out">'+linkOut(b[2])+'</td><td>'+b[3]+'</td><td>'+(b[4]||'-')
+    +'</td><td>'+b[5]+'</td><td>'+b[6]+'</td></tr>';
+ });
+ if(inn.extras)h+='<tr class="extras"><td>Extras</td><td class="out"></td><td>'
+   +esc(String(inn.extras).trim())+'</td><td colspan="3"></td></tr>';
+ return h+'</tbody></table>';
+}
+function linkOut(txt){ // link fielder/bowler names inside "c X b Y"
+ return esc(txt).replace(/\b([A-Z][a-z]+(?:\s[A-Z][a-z'\-]+)+)\b/g,function(m){
+   return idx[norm(m)] ? '<a class="lpcc-pl" data-p="'+esc(idx[norm(m)])+'">'+m+'</a>' : m;});
+}
+function bowlingTbl(inn){
+ if(!inn.bowl.length)return '';
+ var h='<div class="sub">Bowling</div><table><thead><tr><th>Bowler</th><th>O</th><th>M</th>'
+  +'<th>R</th><th>W</th></tr></thead><tbody>';
+ inn.bowl.forEach(function(w){h+='<tr><td>'+plink(w[0])+'</td><td>'+ov(w[1])+'</td><td>'+w[2]
+   +'</td><td>'+w[3]+'</td><td>'+w[4]+'</td></tr>';});
+ return h+'</tbody></table>';
+}
+function fowLine(inn){
+ if(!inn.fow||!inn.fow.length)return '';
+ return '<div class="fow"><b>Fall:</b> '+inn.fow.map(function(f){
+   return f[1]+'-'+f[0]+' ('+plink(f[2])+')';}).join(' &nbsp; ')+'</div>';
+}
+function ptsChips(d){
+ var out='';
+ function block(label,map){var ks=Object.keys(map||{});if(!ks.length)return;
+  ks.sort(function(a,b){return map[b]-map[a];});
+  out+='<div class="sub">'+label+'</div><div class="pts">'+ks.slice(0,6).map(function(n){
+   return '<span class="chip">'+plink(n)+' <b>'+map[n]+'</b></span>';}).join('')+'</div>';}
+ block('⭐ MVP points this match',d.mvp);
+ block('🦆 MVDH points this match',d.mvdh);
+ return out;
+}
+function worm(d){
+ if(!d.worm)return '';var W=880,H=240,ml=38,mr=16,mt=12,mb=26,pw=W-ml-mr,ph=H-mt-mb;
+ var inns=Object.keys(d.worm),cols=['#0a5b3a','#d9322a'],maxo=0,maxr=0;
+ inns.forEach(function(k){d.worm[k].forEach(function(p){if(p[0]>maxo)maxo=p[0];if(p[1]>maxr)maxr=p[1];});});
+ if(!maxo||!maxr)return '';
+ function x(o){return ml+pw*o/maxo;}function y(r){return mt+ph-ph*r/maxr;}
+ var s='<div class="sub">🪱 The run-worm</div><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
+ for(var g=0;g<=4;g++){var yy=mt+ph-ph*g/4;s+='<line x1="'+ml+'" y1="'+yy+'" x2="'+(ml+pw)+'" y2="'+yy+'" stroke="#eceeec"/>'
+   +'<text x="'+(ml-5)+'" y="'+(yy+4)+'" text-anchor="end" font-size="10" fill="#8a978f">'+Math.round(maxr*g/4)+'</text>';}
+ inns.forEach(function(k,i){var pts=d.worm[k].map(function(p){return x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1);}).join(' ');
+   s+='<polyline points="'+pts+'" fill="none" stroke="'+cols[i%2]+'" stroke-width="2.5"/>';
+   var last=d.worm[k][d.worm[k].length-1];
+   s+='<text x="'+(x(last[0])-4)+'" y="'+(y(last[1])-6)+'" font-size="11" fill="'+cols[i%2]+'" text-anchor="end" font-weight="700">'+(d.inns[i]?esc(d.inns[i].team):'')+'</text>';});
+ return s+'</svg>';
+}
+
+function render(d){
+ var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
+ var h='<a class="back" href="javascript:history.back()">← Back</a>'
+  +'<div class="hero"><h1>'+esc(d.home||'')+' v '+esc(d.away||'')+'</h1>'
+  +'<p>'+[when,esc(d.venue||''),esc(d.comp||'')].filter(Boolean).join(' · ')+'</p>'
+  +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+'</div>';
+ h+=ptsChips(d);
+ h+=worm(d);
+ d.inns.forEach(function(inn){
+  var tot=(inn.total!=null?inn.total:'-')+(inn.wkts!=null&&String(inn.wkts)!=='10'?'/'+inn.wkts:'')
+    +(inn.overs?' ('+inn.overs+' ov)':'');
+  h+='<div class="inn"><h2>'+esc(inn.team||'')+'</h2><div class="tot">'+tot+'</div>'
+    +battingTbl(inn)+fowLine(inn)+bowlingTbl(inn)+'</div>';
+ });
+ var pc=qs('pc'); // optional original PC id fallback
+ h+='<p class="pc">Reconstructed from the club\'s local Play-Cricket archive · '
+   +'<a href="https://lintonpark.play-cricket.com/website/results/'+encodeURIComponent(d.id)+'" target="_blank" rel="noopener">view on Play-Cricket ↗</a></p>';
+ document.getElementById('app').innerHTML=h;
+ document.title=(d.home||'')+' v '+(d.away||'')+' — Scorecard';
+}
+
+var mid=qs('m');
+if(!mid){document.getElementById('app').innerHTML='<p>No match specified.</p>';}
+else{fetch('scorecards/'+encodeURIComponent(mid)+'.json').then(function(r){
+  if(!r.ok)throw 0;return r.json();}).then(render).catch(function(){
+  document.getElementById('app').innerHTML='<p>Scorecard not found. '
+   +'<a href="https://lintonpark.play-cricket.com/website/results/'+encodeURIComponent(mid)+'" target="_blank" rel="noopener">Try Play-Cricket ↗</a></p>';});}
+</script>
+<script src="player-card.js"></script>
+</body></html>
