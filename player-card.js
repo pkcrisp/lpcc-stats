@@ -145,7 +145,7 @@
     box.querySelector('#pc-x').addEventListener('click', close);
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
   }
-  function open(who){ ensure(); box.querySelector('#pc-body').innerHTML = card(who);
+  function open(who){ if(!P[who]) return; ensure(); box.querySelector('#pc-body').innerHTML = card(who);
     box.scrollTop=0; back.style.display='flex'; }
   function close(){ if(back) back.style.display='none'; }
 
