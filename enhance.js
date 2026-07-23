@@ -41,7 +41,8 @@
     var header=rows[0], body=rows.slice(1);
     var s=state.get(tbl)||{}; var asc=(s.col===ci)?!s.asc:false; state.set(tbl,{col:ci,asc:asc});
     body.sort(function(a,b){var x=cv(a.cells[ci]),y=cv(b.cells[ci]);return x<y?(asc?-1:1):x>y?(asc?1:-1):0;});
-    body.forEach(function(r){tbl.appendChild(r);});
+    var tb=(body[0]&&body[0].parentNode)||tbl;   // append into <tbody> so rows don't jump out
+    body.forEach(function(r){tb.appendChild(r);});
     [].forEach.call(header.cells,function(th){th.classList.remove('lpcc-sorted','lpcc-asc');});
     header.cells[ci].classList.add('lpcc-sorted'); if(asc)header.cells[ci].classList.add('lpcc-asc');
     applyCap(tbl);                               // re-collapse to the top of the new order
