@@ -25,6 +25,8 @@ tbody tr:nth-child(even) td{background:var(--stripe)}
 .out{color:var(--mut);font-size:.82rem;text-align:left}
 .duck td{color:var(--red)}
 .duck .dk{font-weight:700}
+.ton td{color:var(--green);font-weight:700}
+.ton .tk{font-weight:700}
 .extras td{color:var(--mut);font-style:italic}
 .sub{color:var(--green);margin:14px 0 6px;font-size:.72rem;text-transform:uppercase;
 letter-spacing:.5px;font-weight:700}
@@ -67,9 +69,10 @@ function battingTbl(inn){
  var h='<div style="overflow-x:auto"><table><thead><tr><th>Batter</th><th></th><th>R</th>'
   +'<th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>';
  inn.bat.forEach(function(b){
-  var duck=b[7]?' class="duck"':'';
+  var ton=b[3]>=100, cls=b[7]?' class="duck"':(ton?' class="ton"':'');
   var sr=(b[4]&&b[4]>0)?(b[3]*100/b[4]).toFixed(1):'-';
-  h+='<tr'+duck+'><td>'+plink(b[1])+(b[7]?' <span class="dk">🦆</span>':'')+'</td>'
+  var badge=b[7]?' <span class="dk">🦆</span>':(ton?' <span class="tk">💯</span>':'');
+  h+='<tr'+cls+'><td>'+plink(b[1])+badge+'</td>'
     +'<td class="out">'+linkOut(b[2])+'</td><td>'+b[3]+'</td><td>'+(b[4]||'-')
     +'</td><td>'+b[5]+'</td><td>'+b[6]+'</td><td>'+sr+'</td></tr>';
  });
