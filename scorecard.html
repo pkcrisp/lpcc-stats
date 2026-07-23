@@ -27,6 +27,8 @@ tbody tr:nth-child(even) td{background:var(--stripe)}
 .duck .dk{font-weight:700}
 .ton td{color:var(--green);font-weight:700}
 .ton .tk{font-weight:700}
+.fifer td{color:var(--green);font-weight:700}
+.fifer .sk{font-weight:700}
 .extras td{color:var(--mut);font-style:italic}
 .sub{color:var(--green);margin:14px 0 6px;font-size:.72rem;text-transform:uppercase;
 letter-spacing:.5px;font-weight:700}
@@ -95,13 +97,14 @@ function bowlingTbl(inn){
   +'<thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th>'
   +'<th>Econ</th><th>Avg</th><th>SR</th><th>Wd</th><th>Nb</th></tr></thead><tbody>';
  inn.bowl.forEach(function(w){
-  var balls=oversToBalls(w[1]),runs=w[3],wkts=w[4];
+  var balls=oversToBalls(w[1]),runs=w[3],wkts=w[4],fifer=wkts>=5;
   var econ=balls?(runs*6/balls).toFixed(2):'-';
   var avg=wkts?(runs/wkts).toFixed(1):'-';
   var sr=wkts?(balls/wkts).toFixed(1):'-';
-  h+='<tr><td>'+plink(w[0])+'</td><td>'+ov(w[1])+'</td><td>'+w[2]+'</td><td>'+runs
-    +'</td><td>'+wkts+'</td><td>'+econ+'</td><td>'+avg+'</td><td>'+sr+'</td><td>'
-    +(w[5]||0)+'</td><td>'+(w[6]||0)+'</td></tr>';
+  var star=fifer?' <span class="sk">⭐</span>':'';
+  h+='<tr'+(fifer?' class="fifer"':'')+'><td>'+plink(w[0])+star+'</td><td>'+ov(w[1])
+    +'</td><td>'+w[2]+'</td><td>'+runs+'</td><td>'+wkts+'</td><td>'+econ+'</td><td>'
+    +avg+'</td><td>'+sr+'</td><td>'+(w[5]||0)+'</td><td>'+(w[6]||0)+'</td></tr>';
  });
  return h+'</tbody></table></div>';
 }
