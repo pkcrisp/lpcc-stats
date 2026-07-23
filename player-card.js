@@ -29,6 +29,23 @@
   }
 
   function num(v){ return (v===null||v===undefined) ? '–' : v; }
+  // a heat strip: one cell per slot 1..n, shaded by share of innings, count inside
+  function heat(rows, key, n, label1){
+    var by = {}, max = 0;
+    rows.forEach(function(r){ by[r[key]] = r.inns; if(r.inns>max) max=r.inns; });
+    var cells = '';
+    for (var i=1;i<=n;i++){
+      var v = by[i]||0, t = max?v/max:0;
+      var bg = v ? 'rgba(10,91,58,'+(0.14+0.82*t).toFixed(2)+')' : '#f1f4f2';
+      var fg = t>0.55 ? '#fff' : '#3a463f';
+      var lbl = (i===1&&label1) ? label1 : i;
+      cells += '<div class="pc-hcell" style="background:'+bg+';color:'+fg+'" title="'
+             + (label1?'':'Position ')+lbl+': '+v+' inns">'
+             + '<span class="pc-hv">'+(v||'')+'</span>'
+             + '<span class="pc-hp">'+lbl+'</span></div>';
+    }
+    return '<div class="pc-heat">'+cells+'</div>';
+  }
   function grid(title, pairs){
     var cells = pairs.filter(function(p){return p;}).map(function(p){
       return '<div class="pc-stat"><span class="pc-n">'+num(p[1])+'</span>'
@@ -66,6 +83,7 @@
     var bp = (d.bypos||[]).filter(function(r){return r.inns;});
     if (bp.length){
       h += '<details class="pc-group pc-det"><summary>🪜 By batting position</summary>'
+         + heat(bp, 'pos', 11, null)
          + '<div class="pc-tw"><table class="pc-tbl">'
          + '<thead><tr><th>Pos</th><th>Inns</th><th>NO</th><th>Runs</th><th>HS</th>'
          + '<th>Avg</th><th>50s</th><th>100s</th><th>0s</th></tr></thead><tbody>'
@@ -77,6 +95,7 @@
     var bo = (d.byorder||[]).filter(function(r){return r.inns;});
     if (bo.length){
       h += '<details class="pc-group pc-det"><summary>🎚️ By bowling order</summary>'
+         + heat(bo, 'seq', Math.max.apply(null, bo.map(function(r){return r.seq;})), 'O')
          + '<div class="pc-tw"><table class="pc-tbl">'
          + '<thead><tr><th>Order</th><th>Inns</th><th>Overs</th><th>Wkts</th><th>Runs</th>'
          + '<th>Avg</th><th>Econ</th><th>Mdns</th></tr></thead><tbody>'
@@ -135,7 +154,12 @@
     +'text-transform:uppercase;letter-spacing:.3px;list-style:none;margin-bottom:8px;'
     +'display:flex;align-items:center;gap:6px}'
     +'.pc-det>summary::after{content:"▸";margin-left:auto;transition:transform .15s}'
-    +'.pc-det[open]>summary::after{transform:rotate(90deg)}';
+    +'.pc-det[open]>summary::after{transform:rotate(90deg)}'
+    +'.pc-heat{display:flex;gap:3px;margin:0 0 12px;flex-wrap:wrap}'
+    +'.pc-hcell{flex:1 1 0;min-width:30px;border-radius:6px;padding:6px 2px;text-align:center;'
+    +'display:flex;flex-direction:column;align-items:center;line-height:1.15}'
+    +'.pc-hv{font-weight:700;font-size:.82rem;font-variant-numeric:tabular-nums;min-height:1em}'
+    +'.pc-hp{font-size:.6rem;opacity:.8;text-transform:uppercase}';
     document.head.appendChild(s);
   }
 
