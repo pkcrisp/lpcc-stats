@@ -79,13 +79,26 @@ function linkOut(txt){ // link fielder/bowler names inside "c X b Y"
  return esc(txt).replace(/\b([A-Z][a-z]+(?:\s[A-Z][a-z'\-]+)+)\b/g,function(m){
    return idx[norm(m)] ? '<a class="lpcc-pl" data-p="'+esc(idx[norm(m)])+'">'+m+'</a>' : m;});
 }
+function oversToBalls(o){
+ if(o===null||o===undefined||o==='')return 0;
+ var s=String(o).split('.'),w=parseInt(s[0]||0,10),b=s.length>1?parseInt(s[1]||0,10):0;
+ return (isNaN(w)?0:w)*6+(isNaN(b)?0:b);
+}
 function bowlingTbl(inn){
  if(!inn.bowl.length)return '';
- var h='<div class="sub">Bowling</div><table><thead><tr><th>Bowler</th><th>O</th><th>M</th>'
-  +'<th>R</th><th>W</th></tr></thead><tbody>';
- inn.bowl.forEach(function(w){h+='<tr><td>'+plink(w[0])+'</td><td>'+ov(w[1])+'</td><td>'+w[2]
-   +'</td><td>'+w[3]+'</td><td>'+w[4]+'</td></tr>';});
- return h+'</tbody></table>';
+ var h='<div class="sub">Bowling</div><div style="overflow-x:auto"><table>'
+  +'<thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th>'
+  +'<th>Econ</th><th>Avg</th><th>SR</th><th>Wd</th><th>Nb</th></tr></thead><tbody>';
+ inn.bowl.forEach(function(w){
+  var balls=oversToBalls(w[1]),runs=w[3],wkts=w[4];
+  var econ=balls?(runs*6/balls).toFixed(2):'-';
+  var avg=wkts?(runs/wkts).toFixed(1):'-';
+  var sr=wkts?(balls/wkts).toFixed(1):'-';
+  h+='<tr><td>'+plink(w[0])+'</td><td>'+ov(w[1])+'</td><td>'+w[2]+'</td><td>'+runs
+    +'</td><td>'+wkts+'</td><td>'+econ+'</td><td>'+avg+'</td><td>'+sr+'</td><td>'
+    +(w[5]||0)+'</td><td>'+(w[6]||0)+'</td></tr>';
+ });
+ return h+'</tbody></table></div>';
 }
 function fowLine(inn){
  if(!inn.fow||!inn.fow.length)return '';
