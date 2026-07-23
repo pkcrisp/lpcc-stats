@@ -63,6 +63,17 @@
              + (r.best||'-')+'</td><td>'+r.dis+'</td></tr>'; }).join('')
          + '</tbody></table></div></div>';
     }
+    var bp = (d.bypos||[]).filter(function(r){return r.inns;});
+    if (bp.length){
+      h += '<details class="pc-group pc-det"><summary>🪜 By batting position</summary>'
+         + '<div class="pc-tw"><table class="pc-tbl">'
+         + '<thead><tr><th>Pos</th><th>Inns</th><th>NO</th><th>Runs</th><th>HS</th>'
+         + '<th>Avg</th><th>50s</th><th>100s</th><th>0s</th></tr></thead><tbody>'
+         + bp.map(function(r){ return '<tr><td>#'+r.pos+'</td><td>'+r.inns+'</td><td>'
+             + r.no+'</td><td>'+r.runs+'</td><td>'+r.hs+'</td><td>'+num(r.avg)+'</td><td>'
+             + r.f50+'</td><td>'+r.f100+'</td><td>'+r.ducks+'</td></tr>'; }).join('')
+         + '</tbody></table></div></details>';
+    }
     h += '<a class="pc-full" target="_blank" rel="noopener" href="'+STATS_URL
        + '#p='+encodeURIComponent(who)+'">Full match-by-match record on the Statistics page →</a>';
     return h;
@@ -108,7 +119,12 @@
     +'border-bottom:1px solid #eef1ee}.pc-tbl tbody tr:nth-child(even) td{background:#f6faf7}'
     +'.pc-full{display:inline-block;margin-top:18px;color:#0a5b3a;font-weight:bold;text-decoration:none;'
     +'border:1px solid #0a5b3a;border-radius:8px;padding:8px 14px;font-size:.85rem}'
-    +'.pc-full:hover{background:#0a5b3a;color:#fff}';
+    +'.pc-full:hover{background:#0a5b3a;color:#fff}'
+    +'.pc-det>summary{cursor:pointer;color:#d9322a;font-size:.8rem;font-weight:700;'
+    +'text-transform:uppercase;letter-spacing:.3px;list-style:none;margin-bottom:8px;'
+    +'display:flex;align-items:center;gap:6px}'
+    +'.pc-det>summary::after{content:"▸";margin-left:auto;transition:transform .15s}'
+    +'.pc-det[open]>summary::after{transform:rotate(90deg)}';
     document.head.appendChild(s);
   }
 
