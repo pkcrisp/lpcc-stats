@@ -81,6 +81,11 @@ background:#fff;border:1px solid #cfe0d6;border-radius:10px;padding:6px;margin-b
 box-shadow:0 6px 20px rgba(26,34,30,.28);text-align:center;white-space:nowrap}
 .wtip-t{display:block;font-size:.7rem;color:#3a463f;margin-top:3px;font-weight:600}
 .bt-tip:hover .wtip,.ov-tip:hover .wtip{display:block}
+.mwrap{position:relative}
+.mzone{position:absolute;cursor:help}
+.mzone:hover .wtip{display:block}
+.mwtip{bottom:auto;top:4px;white-space:normal;max-width:220px}
+.mwtip .wtip-t{white-space:normal;line-height:1.35}
 .bt{cursor:help;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
 border-radius:50%;font-size:.72rem;font-weight:700;background:#eef3f0;color:#3a463f;padding:0 4px}
 .bt-w{background:var(--red);color:#fff}.bt-4{background:#1769d1;color:#fff}
@@ -278,6 +283,7 @@ function manhattan(d){
   var maxr=Math.max.apply(null,ovs.map(function(o){return o[1];}))||1;
   var bw=pw/n*0.8,gap=pw/n*0.2;
   s+='<div style="color:var(--green);font-size:.8rem;font-weight:700;margin:6px 0 2px">'+(d.inns[i]?esc(d.inns[i].team):'Innings '+(i+1))+'</div>';
+  s+='<div class="mwrap">';
   s+='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
   for(var g=0;g<=2;g++){var yy=mt+ph-ph*g/2;s+='<line x1="'+ml+'" y1="'+yy+'" x2="'+(ml+pw)+'" y2="'+yy+'" stroke="#eceeec"/><text x="'+(ml-5)+'" y="'+(yy+4)+'" text-anchor="end" font-size="9" fill="#8a978f">'+Math.round(maxr*g/2)+'</text>';}
   var step=n<=15?1:(n<=30?2:5);
@@ -291,6 +297,17 @@ function manhattan(d){
   });
   s+='<text x="'+(ml+pw/2)+'" y="'+(H-2)+'" text-anchor="middle" font-size="9" fill="#8a978f">Over</text>';
   s+='</svg>';
+  var topp=(mt/H*100).toFixed(2),hp=(ph/H*100).toFixed(2);
+  ovs.forEach(function(o,j){
+   if(!o[5]||!o[5].length)return;
+   var lp=((ml+pw*j/n)/W*100).toFixed(2),wp=((pw/n)/W*100).toFixed(2);
+   var runs=o[1]?o[1]+' run'+(o[1]===1?'':'s'):'no runs';
+   var cap='Over '+o[0]+(o[3]?' — '+esc(o[3]):'')+' — '+runs+(o[2]?', '+o[2]+' wkt'+(o[2]===1?'':'s'):'');
+   if(o[4]&&o[4].length)cap+='<br>'+o[4].map(function(w){return wktLine(w).split('\n').map(esc).join('<br>');}).join('<br>');
+   s+='<div class="mzone" style="left:'+lp+'%;width:'+wp+'%;top:'+topp+'%;height:'+hp+'%">'
+     +'<div class="wtip mwtip">'+miniWheel(o[5],76)+'<div class="wtip-t">'+cap+'</div></div></div>';
+  });
+  s+='</div>';
  });
  return s;
 }
