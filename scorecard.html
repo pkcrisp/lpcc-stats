@@ -40,8 +40,15 @@ tbody tr:nth-child(even) td{background:var(--stripe)}
 .sub{color:var(--green);margin:14px 0 6px;font-size:.72rem;text-transform:uppercase;
 letter-spacing:.5px;font-weight:700}
 .pts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0}
-.chip{background:#eef6f1;border:1px solid #cfe6da;border-radius:12px;padding:2px 9px;font-size:.78rem}
+.chip{background:#eef6f1;border:1px solid #cfe6da;border-radius:12px;padding:2px 9px;font-size:.78rem;position:relative;cursor:help}
 .chip b{color:var(--green)}
+.sub .hint{color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0;font-size:.68rem}
+.chip .tip{display:none;position:absolute;bottom:100%;left:0;z-index:20;background:#1a221e;color:#fff;
+padding:7px 10px;border-radius:9px;font-size:.74rem;line-height:1.5;white-space:nowrap;
+box-shadow:0 6px 18px rgba(0,0,0,.28);margin-bottom:6px}
+.chip .tip span{display:block}
+.chip .tip .tip-h{font-weight:700;color:#ffd24a;margin-bottom:3px;border-bottom:1px solid #3a463f;padding-bottom:3px}
+.chip:hover .tip{display:block}
 .fow{color:var(--mut);font-size:.82rem;margin:8px 0 0;line-height:1.7}
 .back{display:inline-block;margin:0 0 12px;text-decoration:none;font-weight:700}
 .pc{color:var(--mut);font-size:.8rem}
@@ -125,12 +132,16 @@ function fowLine(inn){
 }
 function ptsChips(d){
  var out='';
- function block(label,map){var ks=Object.keys(map||{});if(!ks.length)return;
-  ks.sort(function(a,b){return map[b]-map[a];});
-  out+='<div class="sub">'+label+'</div><div class="pts">'+ks.slice(0,6).map(function(n){
-   return '<span class="chip">'+plink(n)+' <b>'+map[n]+'</b></span>';}).join('')+'</div>';}
- block('⭐ MVP points this match',d.mvp);
- block('🦆 MVDH points this match',d.mvdh);
+ function tot(v){return Array.isArray(v)?v[0]:v;}   // [total, breakdown] or bare total
+ function block(label,map,hint){var ks=Object.keys(map||{});if(!ks.length)return;
+  ks.sort(function(a,b){return tot(map[b])-tot(map[a]);});
+  out+='<div class="sub">'+label+' <span class="hint">'+hint+'</span></div><div class="pts">'+ks.slice(0,6).map(function(n){
+   var bd=Array.isArray(map[n])?(map[n][1]||[]):[];
+   var tip=bd.length?'<span class="tip"><span class="tip-h">'+esc(n)+' — '+tot(map[n])+' pts</span>'
+     +bd.map(function(x){return '<span>'+esc(x)+'</span>';}).join('')+'</span>':'';
+   return '<span class="chip">'+plink(n)+' <b>'+tot(map[n])+'</b>'+tip+'</span>';}).join('')+'</div>';}
+ block('⭐ MVP points this match',d.mvp,'hover a name for the breakdown');
+ block('🦆 MVDH points this match',d.mvdh,'hover a name for the breakdown');
  return out;
 }
 function worm(d){
