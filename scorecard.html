@@ -10,7 +10,14 @@ a{color:var(--green)}
 .wrap{max-width:960px;margin:0 auto;padding:16px 18px}
 .hero{background:linear-gradient(135deg,#0a5b3a,#12a06a);color:#fff;border-radius:16px;
 padding:20px 22px;margin:0 0 16px}
-.hero h1{margin:0;font-size:1.4rem}.hero p{margin:.4em 0 0;opacity:.94;font-size:.9rem}
+.hero h1{margin:0;font-size:1.4rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hero p{margin:.4em 0 0;opacity:.94;font-size:.9rem}
+.hero .vs{opacity:.7;font-weight:400;margin:0 2px}
+.scb{width:30px;height:30px;border-radius:50%;object-fit:contain;background:#fff;padding:2px;box-sizing:border-box;flex:0 0 auto}
+.toss{margin:.45em 0 0;font-size:.85rem;opacity:.96}
+.wx{display:inline-flex;align-items:center;gap:4px;margin-top:.5em;background:rgba(255,255,255,.16);
+padding:2px 12px 2px 2px;border-radius:22px;font-size:.85rem}
+.cwk{color:#8fa096;font-size:.82em;font-weight:600}
 .res{display:inline-block;margin-top:8px;background:rgba(255,255,255,.2);border-radius:8px;
 padding:4px 12px;font-weight:700;font-size:.85rem}
 .inn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px}
@@ -75,7 +82,9 @@ function battingTbl(inn){
   var ton=b[3]>=100, cls=b[7]?' class="duck"':(ton?' class="ton"':'');
   var sr=(b[4]&&b[4]>0)?(b[3]*100/b[4]).toFixed(1):'-';
   var badge=b[7]?' <span class="dk">🦆</span>':(ton?' <span class="tk">💯</span>':'');
-  h+='<tr'+cls+'><td>'+plink(b[1])+badge+'</td>'
+  var role=(b[8]?' <span class="cwk" title="captain">(c)</span>':'')
+          +(b[9]?' <span class="cwk" title="wicketkeeper">†</span>':'');
+  h+='<tr'+cls+'><td>'+plink(b[1])+role+badge+'</td>'
     +'<td class="out">'+linkOut(b[2])+'</td><td>'+b[3]+'</td><td>'+(b[4]||'-')
     +'</td><td>'+b[5]+'</td><td>'+b[6]+'</td><td>'+sr+'</td></tr>';
  });
@@ -257,11 +266,30 @@ function scoringZones(d){
  return h+'</div></details>';
 }
 
+// WMO weather code -> [OpenWeatherMap icon code, label]. Icons served from
+// openweathermap.org (stable, free) rather than home-made.
+function wxIcon(c){var m={0:['01d','Clear'],1:['01d','Mainly clear'],2:['02d','Partly cloudy'],
+ 3:['04d','Overcast'],45:['50d','Fog'],48:['50d','Fog'],51:['09d','Light drizzle'],
+ 53:['09d','Drizzle'],55:['09d','Drizzle'],56:['09d','Freezing drizzle'],57:['09d','Freezing drizzle'],
+ 61:['10d','Light rain'],63:['10d','Rain'],65:['10d','Heavy rain'],66:['13d','Freezing rain'],
+ 67:['13d','Freezing rain'],71:['13d','Light snow'],73:['13d','Snow'],75:['13d','Heavy snow'],
+ 77:['13d','Snow grains'],80:['09d','Showers'],81:['10d','Showers'],82:['10d','Heavy showers'],
+ 85:['13d','Snow showers'],86:['13d','Snow showers'],95:['11d','Thunderstorm'],
+ 96:['11d','Thunderstorm'],99:['11d','Thunderstorm']};return m[c]||['02d',''];}
+function weatherBlock(wx){if(!wx)return '';var ic=wxIcon(wx[0]);
+ var bits=[ic[1]];if(wx[1]!=null)bits.push(Math.round(wx[1])+'°C');
+ if(wx[4]!=null)bits.push('wind '+Math.round(wx[4]*0.621)+'mph');
+ if(wx[3]>0)bits.push(wx[3]+'mm rain');
+ return '<div class="wx"><img src="https://openweathermap.org/img/wn/'+ic[0]+'@2x.png" alt="'+esc(ic[1])+'" width="40" height="40" loading="lazy">'
+  +'<span>'+esc(bits.filter(Boolean).join(' · '))+'</span></div>';}
+function scBadge(u){return u?'<img class="scb" src="'+esc(u)+'" alt="" loading="lazy">':'';}
 function render(d){
  var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
+ var toss=d.toss?'<div class="toss">🪙 '+esc(d.toss.replace(/\s*:\s*/,' '))+'</div>':'';
  var h='<a class="back" href="javascript:history.back()">← Back</a>'
-  +'<div class="hero"><h1>'+esc(d.home||'')+' v '+esc(d.away||'')+'</h1>'
+  +'<div class="hero"><h1>'+scBadge(d.hl)+esc(d.home||'')+' <span class="vs">v</span> '+scBadge(d.al)+esc(d.away||'')+'</h1>'
   +'<p>'+[when,esc(d.venue||''),esc(d.comp||'')].filter(Boolean).join(' · ')+'</p>'
+  +toss+weatherBlock(d.wx)
   +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+'</div>';
  h+=ptsChips(d);
  h+=worm(d);
