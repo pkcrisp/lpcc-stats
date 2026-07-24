@@ -75,6 +75,8 @@ border-radius:6px;padding:3px 8px;border:1px solid #f2c8c4}
 .cmt-w{background:#fdecea}.cmt-w b{color:var(--red)}
 .cmt-4{background:#eef4fb}.cmt-4 b{color:#1769d1}
 .cmt-6{background:#f4ecf9}.cmt-6 b{color:#8e44ad}
+.dnb td{font-size:.8rem;color:#5a6b60;padding-top:8px}
+.dnb b{color:var(--green)}
 .bt-tip,.ov-tip{position:relative;cursor:help}
 .wtip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);z-index:40;
 background:#fff;border:1px solid #cfe0d6;border-radius:10px;padding:6px;margin-bottom:7px;
@@ -119,6 +121,14 @@ function battingTbl(inn){
  });
  if(inn.extras)h+='<tr class="extras"><td>Extras</td><td class="out"></td><td>'
    +esc(String(inn.extras).trim())+'</td><td colspan="4"></td></tr>';
+ if(inn.dnb&&inn.dnb.length){
+  var names=inn.dnb.map(function(p){
+   var role=(p[1]?' <span class="cwk" title="captain">(c)</span>':'')
+           +(p[2]?' <span class="cwk" title="wicketkeeper">†</span>':'');
+   return plink(p[0])+role;
+  }).join(', ');
+  h+='<tr class="dnb"><td colspan="7"><b>Did Not Bat:</b> '+names+'</td></tr>';
+ }
  return h+'</tbody></table></div>';
 }
 function linkOut(txt){ // link fielder/bowler names inside "c X b Y"
