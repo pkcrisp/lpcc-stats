@@ -69,6 +69,12 @@ font-size:.72rem;letter-spacing:.5px;list-style:none;display:flex;align-items:ce
 .bl-out{width:100%;margin:2px 0 4px 50px;font-size:.76rem;color:#7a2a22;background:#fdecea;
 border-radius:6px;padding:3px 8px;border:1px solid #f2c8c4}
 .bl-out b a{color:#a3271f}
+.cmt-inn h4{color:var(--green);margin:12px 0 6px;font-size:.9rem}
+.cmt{padding:5px 9px;border-bottom:1px solid var(--stripe);font-size:.82rem;line-height:1.45;border-radius:4px}
+.cmt b{color:var(--green)}
+.cmt-w{background:#fdecea}.cmt-w b{color:var(--red)}
+.cmt-4{background:#eef4fb}.cmt-4 b{color:#1769d1}
+.cmt-6{background:#f4ecf9}.cmt-6 b{color:#8e44ad}
 .bt-tip,.ov-tip{position:relative;cursor:help}
 .wtip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);z-index:40;
 background:#fff;border:1px solid #cfe0d6;border-radius:10px;padding:6px;margin-bottom:7px;
@@ -246,6 +252,22 @@ function ballLog(d){
  return h+'</details>';
 }
 
+function commentary(d){
+ if(!d.balls||!d.balls.some(function(inn){return inn&&inn.some(function(o){return o.cm&&o.cm.length;});}))return '';
+ var h='<details class="pc-det"><summary>📝 Ball-by-ball commentary</summary>';
+ d.balls.forEach(function(inn,i){
+  if(!inn||!inn.length)return;
+  h+='<div class="cmt-inn"><h4>'+(d.inns[i]?esc(d.inns[i].team):'Innings '+(i+1))+'</h4>';
+  inn.forEach(function(o){
+   (o.cm||[]).forEach(function(line){
+    var cls=/OUT!/.test(line)?' cmt-w':(/FOUR/.test(line)?' cmt-4':(/SIX/.test(line)?' cmt-6':''));
+    h+='<div class="cmt'+cls+'">'+line+'</div>';
+   });
+  });
+  h+='</div>';
+ });
+ return h+'</details>';
+}
 function runColor(r){return r>=6?'#8e44ad':r>=4?'#1769d1':r>=2?'#12a06a':r>=1?'#0a5b3a':'#c9d3cd';}
 function manhattan(d){
  if(!d.manh||!d.manh.some(function(m){return m&&m.length;}))return '';
@@ -376,6 +398,7 @@ function render(d){
  h+=wagonWheel(d);
  h+=scoringZones(d);
  h+=ballLog(d);
+ h+=commentary(d);
  d.inns.forEach(function(inn){
   var tot=(inn.total!=null?inn.total:'-')+(inn.wkts!=null&&String(inn.wkts)!=='10'?'/'+inn.wkts:'')
     +(inn.overs?' ('+inn.overs+' ov)':'');
