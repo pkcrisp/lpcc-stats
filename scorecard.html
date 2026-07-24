@@ -69,6 +69,12 @@ font-size:.72rem;letter-spacing:.5px;list-style:none;display:flex;align-items:ce
 .bl-out{width:100%;margin:2px 0 4px 50px;font-size:.76rem;color:#7a2a22;background:#fdecea;
 border-radius:6px;padding:3px 8px;border:1px solid #f2c8c4}
 .bl-out b a{color:#a3271f}
+.bt-tip,.ov-tip{position:relative;cursor:help}
+.wtip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);z-index:40;
+background:#fff;border:1px solid #cfe0d6;border-radius:10px;padding:6px;margin-bottom:7px;
+box-shadow:0 6px 20px rgba(26,34,30,.28);text-align:center;white-space:nowrap}
+.wtip-t{display:block;font-size:.7rem;color:#3a463f;margin-top:3px;font-weight:600}
+.bt-tip:hover .wtip,.ov-tip:hover .wtip{display:block}
 .bt{cursor:help;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
 border-radius:50%;font-size:.72rem;font-weight:700;background:#eef3f0;color:#3a463f;padding:0 4px}
 .bt-w{background:var(--red);color:#fff}.bt-4{background:#1769d1;color:#fff}
@@ -149,6 +155,17 @@ function ptsChips(d){
  block('🦆 MVDH points this match',d.mvdh,'hover a name for the breakdown');
  return out;
 }
+function miniWheel(shots,R){R=R||60;var pad=6,cx=R+pad,cy=R+pad,sz=2*(R+pad);
+ var maxl=Math.max.apply(null,shots.map(function(p){return p[1];}))||60;
+ var s='<svg viewBox="0 0 '+sz+' '+sz+'" width="'+sz+'" height="'+sz+'" style="display:block">';
+ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#f2f8f4" stroke="#cfe0d6"/>';
+ s+='<line x1="'+cx+'" y1="'+(cy-R)+'" x2="'+cx+'" y2="'+(cy+R)+'" stroke="#e0ebe4"/>';
+ s+='<line x1="'+(cx-R)+'" y1="'+cy+'" x2="'+(cx+R)+'" y2="'+cy+'" stroke="#e0ebe4"/>';
+ shots.forEach(function(p){var rad=p[0]*Math.PI/180,len=R*Math.min(1,p[1]/maxl);
+  var x=cx+len*Math.sin(rad),y=cy-len*Math.cos(rad);
+  s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+runColor(p[2])+'" stroke-width="'+(p[2]>=4?2:1.3)+'"/>';
+  if(p[2]>=4)s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.6" fill="'+runColor(p[2])+'"/>';});
+ s+='<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#1a221e"/></svg>';return s;}
 function wktLine(w){var l='🔴 '+w.o+(w.od?' ('+String(w.od).trim()+')':'');
  if(w.or!=null)l+='\n     '+w.or+' runs · '+w.ob+' balls · '+w.o4+'x4 · '+w.o6+'x6 · SR '+w.osr;
  return l;}
@@ -193,19 +210,33 @@ function ballLog(d){
   inn.forEach(function(o){
    var end=(o.sc&&o.sc.length)?o.sc[o.sc.length-1]:[o.rt||0,0];
    var balls=o.t.map(function(t,j){
-     var w=(o.wd&&o.wd[j])?o.wd[j]:null,b=(o.bs&&o.bs[j])?o.bs[j]:null,sc=(o.sc&&o.sc[j])?o.sc[j]:null,title='';
+     var w=(o.wd&&o.wd[j])?o.wd[j]:null,b=(o.bs&&o.bs[j])?o.bs[j]:null,sc=(o.sc&&o.sc[j])?o.sc[j]:null,sh=(o.sh&&o.sh[j])?o.sh[j]:null,title='';
      if(w){
       title='WICKET — '+w.o+(w.od?' ('+String(w.od).trim()+')':'')+'  '+w.or+' ('+w.ob+'b, '+w.o4+'x4, '+w.o6+'x6, SR '+w.osr+')';
       if(w.n)title+='\nNot out — '+w.n+'  '+w.nr+' ('+w.nb+'b, '+w.n4+'x4, '+w.n6+'x6, SR '+w.nsr+')';
      }else if(b){
       title=b[0]+' — '+b[1]+' ('+b[2]+'b, '+b[3]+'x4, '+b[4]+'x6, SR '+b[5]+')'+(sc?'\nTeam '+sc[0]+'/'+sc[1]:'');
      }else if(sc){title=sc[0]+'/'+sc[1]+' after this ball';}
+     if(sh&&!w){   // recorded shot -> custom hover tooltip with a mini wagon wheel
+      var txt=(b?b[0]+' — '+b[1]+' ('+b[2]+'b, SR '+b[5]+')':'')+(sc?' · '+sc[0]+'/'+sc[1]:'');
+      return '<span class="bt bt-tip '+tokCls(t)+'">'+esc(t)+'<span class="wtip">'+miniWheel([sh],54)+'<span class="wtip-t">'+esc(txt)+'</span></span></span>';
+     }
      return '<span class="bt '+tokCls(t)+'"'+(title?' title="'+esc(title)+'"':'')+'>'+esc(t)+'</span>';
    }).join('');
    var diss='';
-   if(o.wd)o.wd.forEach(function(w){if(w)diss+='<div class="bl-out">🔴 <b>'+plink(w.o)+'</b> | '
-     +esc(String(w.od||'').trim()||'out')+' | '+w.or+' runs | '+w.ob+' balls | '+w.o4+' fours | '+w.o6+' sixes | '+w.osr+' SR</div>';});
-   h+='<div class="bl-ov"><span class="bl-on">Ov '+o.ov+'</span>'
+   if(o.wd)o.wd.forEach(function(w){if(w){
+     var bsh=(d.shots&&d.shots[i])?d.shots[i].filter(function(p){return p[3]===w.oab;}):[];
+     var nm=bsh.length
+       ?'<span class="ov-tip"><b>'+plink(w.o)+'</b><span class="wtip">'+miniWheel(bsh,90)+'<span class="wtip-t">'+esc(w.o)+' — '+bsh.length+' scoring shot'+(bsh.length===1?'':'s')+'</span></span></span>'
+       :'<b>'+plink(w.o)+'</b>';
+     diss+='<div class="bl-out">🔴 '+nm+' | '
+       +esc(String(w.od||'').trim()||'out')+' | '+w.or+' runs | '+w.ob+' balls | '+w.o4+' fours | '+w.o6+' sixes | '+w.osr+' SR</div>';
+   }});
+   var ovsh=(o.sh||[]).filter(Boolean);
+   var ovn='Ov '+o.ov;
+   if(ovsh.length)ovn='<span class="ov-tip">Ov '+o.ov+'<span class="wtip">'+miniWheel(ovsh,82)
+     +'<span class="wtip-t">Over '+o.ov+' — '+ovsh.length+' scoring shot'+(ovsh.length===1?'':'s')+'</span></span></span>';
+   h+='<div class="bl-ov"><span class="bl-on">'+ovn+'</span>'
      +'<span class="bl-bw">'+plink(o.bowl)+'</span><span class="bl-balls">'+balls
      +'</span><span class="bl-sum">'+(o.runs!=null?o.runs+' run'+(o.runs===1?'':'s'):'')
      +(o.wkts?', '+o.wkts+'w':'')+' · <b>'+end[0]+'/'+end[1]+'</b></span></div>'+diss;
