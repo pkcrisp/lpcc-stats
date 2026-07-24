@@ -190,11 +190,13 @@ function ballLog(d){
   inn.forEach(function(o){
    var end=(o.sc&&o.sc.length)?o.sc[o.sc.length-1]:[o.rt||0,0];
    var balls=o.t.map(function(t,j){
-     var w=(o.wd&&o.wd[j])?o.wd[j]:null,title='';
+     var w=(o.wd&&o.wd[j])?o.wd[j]:null,b=(o.bs&&o.bs[j])?o.bs[j]:null,sc=(o.sc&&o.sc[j])?o.sc[j]:null,title='';
      if(w){
       title='WICKET — '+w.o+(w.od?' ('+String(w.od).trim()+')':'')+'  '+w.or+' ('+w.ob+'b, '+w.o4+'x4, '+w.o6+'x6, SR '+w.osr+')';
       if(w.n)title+='\\nNot out — '+w.n+'  '+w.nr+' ('+w.nb+'b, '+w.n4+'x4, '+w.n6+'x6, SR '+w.nsr+')';
-     }else{var sc=(o.sc&&o.sc[j])?o.sc[j]:null;title=sc?sc[0]+'/'+sc[1]+' after this ball':'';}
+     }else if(b){
+      title=b[0]+' — '+b[1]+' ('+b[2]+'b, '+b[3]+'x4, '+b[4]+'x6, SR '+b[5]+')'+(sc?'\\nTeam '+sc[0]+'/'+sc[1]:'');
+     }else if(sc){title=sc[0]+'/'+sc[1]+' after this ball';}
      return '<span class="bt '+tokCls(t)+'"'+(title?' title="'+esc(title)+'"':'')+'>'+esc(t)+'</span>';
    }).join('');
    var diss='';
