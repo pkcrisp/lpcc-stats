@@ -169,7 +169,8 @@ function worm(d){
    s+='<polyline points="'+pts+'" fill="none" stroke="'+cols[i%2]+'" stroke-width="2.5"/>';
    var runAt={};line.forEach(function(p){runAt[p[0]]=p[1];});
    if(d.manh&&d.manh[i])d.manh[i].forEach(function(o){if(o[2]){var xx=x(o[0]),yy=y(runAt[o[0]]||0);
-     for(var k=0;k<o[2];k++)s+='<circle cx="'+xx.toFixed(1)+'" cy="'+(yy-k*5).toFixed(1)+'" r="3.2" fill="#d9322a" stroke="#fff" stroke-width="1"/>';}});
+     for(var k=0;k<o[2];k++){var nm=(o[4]&&o[4][k])?o[4][k]:'';
+       s+='<circle cx="'+xx.toFixed(1)+'" cy="'+(yy-k*5).toFixed(1)+'" r="3.2" fill="#d9322a" stroke="#fff" stroke-width="1" style="cursor:help"><title>Wicket — over '+o[0]+(nm?': '+esc(nm)+' out':'')+'</title></circle>';}}});
    line.forEach(function(p){s+='<circle cx="'+x(p[0]).toFixed(1)+'" cy="'+y(p[1]).toFixed(1)+'" r="7" fill="transparent" style="cursor:help"><title>End of over '+p[0]+' — '+p[1]+'/'+(p[2]||0)+'</title></circle>';});
    var last=line[line.length-1];
    s+='<text x="'+(x(last[0])-4)+'" y="'+(y(last[1])-6)+'" font-size="11" fill="'+cols[i%2]+'" text-anchor="end" font-weight="700">'+(d.inns[i]?esc(d.inns[i].team):'')+'</text>';});
@@ -225,6 +226,7 @@ function manhattan(d){
   ovs.forEach(function(o,j){var bh=ph*o[1]/maxr,x=ml+pw*j/n+gap/2,y=mt+ph-bh;
    var runs=o[1]?o[1]+' run'+(o[1]===1?'':'s'):'no runs';
    var lbl='Over '+o[0]+(o[3]?' — '+o[3]:'')+' — '+runs+(o[2]?', '+o[2]+' wkt'+(o[2]===1?'':'s'):'');
+   if(o[4]&&o[4].length)lbl+=' — out: '+o[4].join(', ');
    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" fill="'+(o[2]?'#d9322a':'#0a5b3a')+'" rx="1" style="cursor:help"><title>'+esc(lbl)+'</title></rect>';
    if(o[2])for(var k=0;k<o[2];k++)s+='<circle cx="'+(x+bw/2).toFixed(1)+'" cy="'+(y-4-k*5).toFixed(1)+'" r="1.8" fill="#d9322a"/>';
    if(o[0]%step===0||j===n-1)s+='<text x="'+(ml+pw*j/n+pw/n/2).toFixed(1)+'" y="'+(mt+ph+13)+'" text-anchor="middle" font-size="9" fill="#8a978f">'+o[0]+'</text>';
