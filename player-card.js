@@ -96,6 +96,17 @@
              + (r.best||'-')+'</td><td>'+r.dis+'</td></tr>'; }).join('')
          + '</tbody></table></div></div>';
     }
+    var bseas = (d.seasons||[]).filter(function(r){
+      return r.wkts || (r.overs && r.overs!=='-' && r.overs!=='0.0' && r.overs!==0); });
+    if (bseas.length){
+      h += '<div class="pc-group"><h4>⚾ Bowling by season</h4><div class="pc-tw"><table class="pc-tbl">'
+         + '<thead><tr><th>Season</th><th>Overs</th><th>Mdns</th><th>Runs</th><th>Wkts</th>'
+         + '<th>Avg</th><th>Econ</th><th>Best</th></tr></thead><tbody>'
+         + bseas.map(function(r){ return '<tr><td>'+r.s+'</td><td>'+r.overs+'</td><td>'
+             + r.maid+'</td><td>'+r.bruns+'</td><td>'+r.wkts+'</td><td>'+num(r.bavg)+'</td><td>'
+             + num(r.econ)+'</td><td>'+(r.best||'-')+'</td></tr>'; }).join('')
+         + '</tbody></table></div></div>';
+    }
     var bp = (d.bypos||[]).filter(function(r){return r.inns;});
     if (bp.length){
       h += '<details class="pc-group pc-det"><summary>🪜 By batting position</summary>'
