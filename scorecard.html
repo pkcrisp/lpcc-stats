@@ -395,8 +395,8 @@ function scoringZones(d){
  return h+'</div></details>';
 }
 
-// WMO weather code -> [OpenWeatherMap icon code, label]. Icons served from
-// openweathermap.org (stable, free) rather than home-made.
+// WMO weather code -> [OpenWeatherMap icon code, label]. Icons are self-hosted at
+// assets/wx-<code>.png (copied from site_assets by build_site) — no external hotlinking.
 function wxIcon(c){var m={0:['01d','Clear'],1:['01d','Mainly clear'],2:['02d','Partly cloudy'],
  3:['04d','Overcast'],45:['50d','Fog'],48:['50d','Fog'],51:['09d','Light drizzle'],
  53:['09d','Drizzle'],55:['09d','Drizzle'],56:['09d','Freezing drizzle'],57:['09d','Freezing drizzle'],
@@ -409,17 +409,22 @@ function weatherBlock(wx){if(!wx)return '';var ic=wxIcon(wx[0]);
  var bits=[ic[1]];if(wx[1]!=null)bits.push(Math.round(wx[1])+'°C');
  if(wx[4]!=null)bits.push('wind '+Math.round(wx[4]*0.621)+'mph');
  if(wx[3]>0)bits.push(wx[3]+'mm rain');
- return '<div class="wx"><img src="https://openweathermap.org/img/wn/'+ic[0]+'@2x.png" alt="'+esc(ic[1])+'" width="40" height="40" loading="lazy">'
+ return '<div class="wx"><img src="assets/wx-'+ic[0]+'.png" alt="'+esc(ic[1])+'" width="40" height="40" loading="lazy">'
   +'<span>'+esc(bits.filter(Boolean).join(' · '))+'</span></div>';}
 function scBadge(u){return u?'<img class="scb" src="'+esc(u)+'" alt="" loading="lazy">':'';}
 function render(d){
  var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
  var toss=d.toss?'<div class="toss">🪙 '+esc(d.toss.replace(/\s*:\s*/,' '))+'</div>':'';
+ var spon='';
+ if(d.spon&&(d.spon.ball||d.spon.day)){var sr='';
+  if(d.spon.day)sr+='<span style="margin:0 8px;white-space:nowrap">🏟️ Match Day Sponsor: <b>'+esc(d.spon.day)+'</b></span>';
+  if(d.spon.ball)sr+='<span style="margin:0 8px;white-space:nowrap">🔴 Match Ball Sponsor: <b>'+esc(d.spon.ball)+'</b></span>';
+  spon='<div class="scspon" style="margin-top:10px;padding:8px 12px;background:rgba(255,255,255,.16);border-radius:8px;font-size:.85rem">'+sr+'</div>';}
  var h='<a class="back" href="javascript:history.back()">← Back</a>'
   +'<div class="hero"><h1>'+scBadge(d.hl)+esc(d.home||'')+' <span class="vs">v</span> '+scBadge(d.al)+esc(d.away||'')+'</h1>'
   +'<p>'+[when,esc(d.venue||''),esc(d.comp||'')].filter(Boolean).join(' · ')+'</p>'
   +toss+weatherBlock(d.wx)
-  +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+'</div>';
+  +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+spon+'</div>';
  h+=ptsChips(d);
  h+=worm(d);
  h+=manhattan(d);
@@ -453,6 +458,6 @@ else{fetch('scorecards/'+encodeURIComponent(mid)+'.json').then(function(r){
 </script>
 <script src="player-card.js"></script>
 
-<footer class="lpcc-foot"><div class="lpcc-foot-t">Proudly sponsored by</div><div class="lpcc-foot-logos"><a href="https://www.beesec.co.uk/" target="_blank" rel="noopener" title="BeeSec"><img src="sponsors/beesec.png" alt="BeeSec" loading="lazy"></a><a href="https://amicusaccountancy.co.uk/" target="_blank" rel="noopener" title="Amicus Accountancy"><img src="sponsors/amicus.png" alt="Amicus Accountancy" loading="lazy"></a></div><div class="lpcc-foot-links"><a href="sponsors.html">Meet our sponsors</a> · <a href="brands.html">Member brands</a></div></footer>
+<footer class="lpcc-foot"><div class="lpcc-foot-t">Proudly sponsored by</div><div class="lpcc-foot-logos"><a href="https://www.beesec.co.uk/" target="_blank" rel="noopener" title="BeeSec"><img src="sponsors/beesec.png" alt="BeeSec" loading="lazy"></a><a href="https://amicusaccountancy.co.uk/" target="_blank" rel="noopener" title="Amicus Accountancy"><img src="sponsors/amicus.png" alt="Amicus Accountancy" loading="lazy"></a><a href="https://www.kingfisherbeer.com/" target="_blank" rel="noopener" title="Kingfisher"><img src="sponsors/" alt="Kingfisher" loading="lazy"></a></div><div class="lpcc-foot-links"><a href="sponsors.html">Meet our sponsors</a> · <a href="brands.html">Member brands</a></div></footer>
 <script>(function(){var m=document.querySelectorAll('.lpcc-menu');m.forEach(function(d){d.addEventListener('toggle',function(){if(d.open)m.forEach(function(o){if(o!==d)o.open=false;});});});document.addEventListener('click',function(e){if(!e.target.closest('.lpcc-menu'))m.forEach(function(o){o.open=false;});});})();</script>
 </body></html>

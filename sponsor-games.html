@@ -40,7 +40,7 @@
 .btn{background:#0a5b3a;color:#fff;border:0;border-radius:8px;padding:9px 18px;font-weight:800;cursor:pointer}
 .btn.ghost{background:#eef2ef;color:#54635b}
 .msg{font-size:.86rem;margin-top:10px}.msg.ok{color:#0a5b3a}.msg.err{color:#c0392b}
-</style><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><div class="sw"><div class="sw-hero"><h1>🏏 Sponsor a Match</h1><p>Back Linton Park by sponsoring a match ball or a whole match day this season. Pledge below and the club will be in touch — every ball and every game counts.</p><div class="sw-prices"><div class="sw-price">Match Ball <b>£50</b></div><div class="sw-price">Match Day <b>£100</b></div></div></div><div id="fixtures"><p class="sw-empty">Loading fixtures…</p></div><div class="mask" id="mask"><div class="modal"><h2>Pledge your support</h2><div class="sub" id="m-sub"></div><label>Your name</label><input id="m-name" maxlength="80" autocomplete="name"><label>Email</label><input id="m-email" type="email" maxlength="120" autocomplete="email"><label>Message (optional)</label><textarea id="m-msg" rows="2" maxlength="300"></textarea><div id="m-ts" style="margin-top:12px"></div><div class="msg" id="m-msg-out"></div><div class="row"><button class="btn" id="m-send">Pledge</button><button class="btn ghost" id="m-cancel">Cancel</button></div></div></div><script>window.SW={worker:"https://lpcc-sponsor.lintonparkcc.workers.dev",sitekey:"0x4AAAAAAD_ERJ1zWWXl4mtE",price:{ball:50,day:100}};
+</style><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><div class="sw"><div class="sw-hero"><h1>🏏 Sponsor a Match</h1><p>Back Linton Park by sponsoring a match ball or a whole match day this season. Pledge below and the club will be in touch — every ball and every game counts.</p><div class="sw-prices"><div class="sw-price">Match Ball <b>£50</b></div><div class="sw-price">Match Day <b>£100</b></div></div><p style="margin:10px 0 0;opacity:.9;font-size:.9rem">Junior &amp; age-group games are a lower tier — Match Ball <b>£15</b>, Match Day <b>£30</b>.</p></div><div id="fixtures"><p class="sw-empty">Loading fixtures…</p></div><div class="mask" id="mask"><div class="modal"><h2>Pledge your support</h2><div class="sub" id="m-sub"></div><label>Your name</label><input id="m-name" maxlength="80" autocomplete="name"><label>Email</label><input id="m-email" type="email" maxlength="120" autocomplete="email"><label>Message (optional)</label><textarea id="m-msg" rows="2" maxlength="300"></textarea><div id="m-ts" style="margin-top:12px"></div><div class="msg" id="m-msg-out"></div><div class="row"><button class="btn" id="m-send">Pledge</button><button class="btn ghost" id="m-cancel">Cancel</button></div></div></div><script>window.SW={worker:"https://lpcc-sponsor.lintonparkcc.workers.dev",sitekey:"0x4AAAAAAD_ERJ1zWWXl4mtE",prices:{senior:{ball:50,day:100},junior:{ball:15,day:30}}};
 (function(){
   var W=window.SW, FX=[], taken={}, wid=null, cur=null;
   function esc(s){return (s==null?'':''+s).replace(/[&<>"']/g,function(c){
@@ -58,11 +58,13 @@
     if(!FX.length){box.innerHTML='<p class="sw-empty">No upcoming fixtures listed yet — the '
       +'new season’s games will appear here once published.</p>';return;}
     box.innerHTML=FX.map(function(fx){
+      var pr=fx.junior?W.prices.junior:W.prices.senior;
       return '<div class="fx"><div class="fx-when">'+esc(fmtDate(fx.date))
         +'<small>'+esc(fx.time||'')+'</small></div>'
         +'<div class="fx-who"><b>'+esc(fx.home?'Linton Park':fx.opp)+' v '+esc(fx.home?fx.opp:'Linton Park')
-        +'</b><small>'+esc(fx.xi||'')+(fx.venue?' · '+esc(fx.venue):'')+'</small></div>'
-        +'<div class="fx-slots">'+slot(fx,'ball','Ball',W.price.ball)+slot(fx,'day','Day',W.price.day)+'</div></div>';
+        +'</b><small>'+esc(fx.xi||'')+(fx.venue?' · '+esc(fx.venue):'')
+        +(fx.junior?' · <b>Junior</b>':'')+'</small></div>'
+        +'<div class="fx-slots">'+slot(fx,'ball','Ball',pr.ball)+slot(fx,'day','Day',pr.day)+'</div></div>';
     }).join('');
     box.querySelectorAll('.slot:not([disabled])').forEach(function(b){
       b.addEventListener('click',function(){ openModal(b.dataset.id,b.dataset.type); });
@@ -72,7 +74,8 @@
     if(!W.worker||!W.sitekey){ alert('Online sign-up is opening soon — please email the club to pledge.'); return; }
     var fx=FX.filter(function(f){return f.id===id;})[0]; if(!fx)return;
     cur={id:id,type:type,season:fx.season};
-    document.getElementById('m-sub').textContent=(type==='ball'?'Match Ball · £'+W.price.ball:'Match Day · £'+W.price.day)
+    var pr=fx.junior?W.prices.junior:W.prices.senior;
+    document.getElementById('m-sub').textContent=(type==='ball'?'Match Ball · £'+pr.ball:'Match Day · £'+pr.day)
       +'  —  '+(fx.home?'Linton Park':fx.opp)+' v '+(fx.home?fx.opp:'Linton Park')+', '+fmtDate(fx.date);
     document.getElementById('m-msg-out').textContent='';
     document.getElementById('mask').style.display='flex';
@@ -112,7 +115,7 @@
   }).catch(function(){ document.getElementById('fixtures').innerHTML='<p class="sw-empty">Fixtures unavailable just now.</p>'; });
 })();
 </script></div>
-<footer class="lpcc-foot"><div class="lpcc-foot-t">Proudly sponsored by</div><div class="lpcc-foot-logos"><a href="https://www.beesec.co.uk/" target="_blank" rel="noopener" title="BeeSec"><img src="sponsors/beesec.png" alt="BeeSec" loading="lazy"></a><a href="https://amicusaccountancy.co.uk/" target="_blank" rel="noopener" title="Amicus Accountancy"><img src="sponsors/amicus.png" alt="Amicus Accountancy" loading="lazy"></a></div><div class="lpcc-foot-links"><a href="sponsors.html">Meet our sponsors</a> · <a href="brands.html">Member brands</a></div></footer>
+<footer class="lpcc-foot"><div class="lpcc-foot-t">Proudly sponsored by</div><div class="lpcc-foot-logos"><a href="https://www.beesec.co.uk/" target="_blank" rel="noopener" title="BeeSec"><img src="sponsors/beesec.png" alt="BeeSec" loading="lazy"></a><a href="https://amicusaccountancy.co.uk/" target="_blank" rel="noopener" title="Amicus Accountancy"><img src="sponsors/amicus.png" alt="Amicus Accountancy" loading="lazy"></a><a href="https://www.kingfisherbeer.com/" target="_blank" rel="noopener" title="Kingfisher"><img src="sponsors/" alt="Kingfisher" loading="lazy"></a></div><div class="lpcc-foot-links"><a href="sponsors.html">Meet our sponsors</a> · <a href="brands.html">Member brands</a></div></footer>
 <script>(function(){var m=document.querySelectorAll('.lpcc-menu');m.forEach(function(d){d.addEventListener('toggle',function(){if(d.open)m.forEach(function(o){if(o!==d)o.open=false;});});});document.addEventListener('click',function(e){if(!e.target.closest('.lpcc-menu'))m.forEach(function(o){o.open=false;});});})();</script>
 </body>
 </html>
