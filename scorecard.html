@@ -417,8 +417,10 @@ function render(d){
  var toss=d.toss?'<div class="toss">🪙 '+esc(d.toss.replace(/\s*:\s*/,' '))+'</div>':'';
  var spon='';
  if(d.spon&&(d.spon.ball||d.spon.day)){var sr='';
-  if(d.spon.day)sr+='<span style="margin:0 8px;white-space:nowrap">🏟️ Match Day Sponsor: <b>'+esc(d.spon.day)+'</b></span>';
-  if(d.spon.ball)sr+='<span style="margin:0 8px;white-space:nowrap">🔴 Match Ball Sponsor: <b>'+esc(d.spon.ball)+'</b></span>';
+  var _spn=function(x){if(!x||!x.name)return '';var n=esc(x.name);if(!x.url)return n;
+   return '<a href="'+esc(x.url).replace(/"/g,'%22')+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+n+'</a>';};
+  if(d.spon.day)sr+='<span style="margin:0 8px;white-space:nowrap">🏟️ Match Day Sponsor: <b>'+_spn(d.spon.day)+'</b></span>';
+  if(d.spon.ball)sr+='<span style="margin:0 8px;white-space:nowrap">🔴 Match Ball Sponsor: <b>'+_spn(d.spon.ball)+'</b></span>';
   spon='<div class="scspon" style="margin-top:10px;padding:8px 12px;background:rgba(255,255,255,.16);border-radius:8px;font-size:.85rem">'+sr+'</div>';}
  var h='<a class="back" href="javascript:history.back()">← Back</a>'
   +'<div class="hero"><h1>'+scBadge(d.hl)+esc(d.home||'')+' <span class="vs">v</span> '+scBadge(d.al)+esc(d.away||'')+'</h1>'
