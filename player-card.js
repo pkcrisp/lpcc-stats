@@ -1,7 +1,7 @@
 
 (function(){
   var P = window.LPCC_PLAYERS || {};
-  var STATS_URL = "https://lintonparkcricketclub.co.uk/stats.html";
+  var STATS_URL = "https://stats.lintonparkcricketclub.co.uk/stats.html";
   // normalised name -> canonical key
   var idx = {};
   function norm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
@@ -44,28 +44,6 @@
     });
     s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#1a221e"/></svg>';
     return s;
-  }
-  // first-scoring-shot heatmap: translucent dots (density = heat) of each innings' first shot
-  // outcome colour per run value 1..6 (all distinct)
-  function fcol(r){return r>=6?'#8e44ad':r>=5?'#e08a00':r>=4?'#1769d1':r>=3?'#00838f':r>=2?'#12a06a':'#0a5b3a';}
-  function pcFirstShot(fs, mirror){
-    var R=140,cx=R+8,cy=R+8,sz=2*(R+8);
-    var maxl=0; fs.forEach(function(p){if(p[1]>maxl)maxl=p[1];}); maxl=maxl||60;
-    var s='<svg viewBox="0 0 '+sz+' '+sz+'" style="width:100%;max-width:320px;height:auto;display:block;margin:0 auto">';
-    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#f2f8f4" stroke="#cfe0d6"/>';
-    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.6)+'" fill="none" stroke="#e0ebe4" stroke-dasharray="3 4"/>';
-    s+='<rect x="'+(cx-8)+'" y="'+(cy-30)+'" width="16" height="60" rx="3" fill="#e7d9b0" stroke="#cdbb8a"/>';
-    // singles first, boundaries on top so they stand out
-    fs.slice().sort(function(a,b){return (a[2]||0)-(b[2]||0);}).forEach(function(p){
-      var ang=mirror?(360-p[0])%360:p[0],rad=ang*Math.PI/180,len=R*Math.min(1,p[1]/maxl),rn=p[2]||1;
-      s+='<circle cx="'+(cx+len*Math.sin(rad)).toFixed(1)+'" cy="'+(cy-len*Math.cos(rad)).toFixed(1)+'" r="'+(rn>=4?7.5:6)+'" fill="'+fcol(rn)+'" fill-opacity="'+(rn>=4?0.6:0.4)+'"/>';
-    });
-    return s+'</svg>';
-  }
-  function fsLegend(fs){
-    var by={}; fs.forEach(function(p){var r=p[2]||1; by[r]=(by[r]||0)+1;});
-    var out='';[1,2,3,4,5,6].forEach(function(r){ if(by[r]) out+='<span style="display:inline-flex;align-items:center;gap:4px;margin:0 9px 5px 0;font-size:.76rem;color:#3a463f"><span style="width:11px;height:11px;border-radius:50%;background:'+fcol(r)+'"></span>'+r+' <span style="color:#8fa096">('+by[r]+')</span></span>'; });
-    return out;
   }
   // a heat strip: one cell per slot 1..n, shaded by share of innings, count inside
   function heat(rows, key, n, label1){
@@ -161,14 +139,6 @@
          + '(electronic era)'+(hd?' · '+hd+'H bat':'')+' — <span style="color:#0a5b3a">1-3</span>, '
          + '<span style="color:#1769d1">four</span>, <span style="color:#8e44ad">six</span>.</p>'
          + pcWheel(sh, mir) + '</details>';
-    }
-    var fs=(d.fshots||[]);
-    if(fs.length>=5){
-      h += '<details class="pc-det"><summary>🎯 First scoring shot heatmap</summary>'
-         + '<p style="color:#64716a;font-size:.78rem;margin:6px 0">Where the batter gets off '
-         + 'the mark, coloured by the runs it fetched — '+fs.length+' innings'+(d.hand?' · '+d.hand+'H bat':'')+'.</p>'
-         + '<div style="margin:0 0 4px">'+fsLegend(fs)+'</div>'
-         + pcFirstShot(fs, (d.hand==='L')) + '</details>';
     }
     h += '<a class="pc-full" target="_blank" rel="noopener" href="'+STATS_URL
        + '#p='+encodeURIComponent(who)+'">Full match-by-match record on the Statistics page →</a>';
