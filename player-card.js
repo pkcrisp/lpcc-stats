@@ -1,7 +1,7 @@
 
 (function(){
   var P = window.LPCC_PLAYERS || {};
-  var STATS_URL = "https://stats.lintonparkcricketclub.co.uk/stats.html";
+  var STATS_URL = "https://lintonparkcricketclub.co.uk/stats.html";
   // normalised name -> canonical key
   var idx = {};
   function norm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
@@ -44,6 +44,19 @@
     });
     s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#1a221e"/></svg>';
     return s;
+  }
+  // first-scoring-shot heatmap: translucent dots (density = heat) of each innings' first shot
+  function pcFirstShot(fs, mirror){
+    var R=140,cx=R+8,cy=R+8,sz=2*(R+8);
+    var maxl=0; fs.forEach(function(p){if(p[1]>maxl)maxl=p[1];}); maxl=maxl||60;
+    var s='<svg viewBox="0 0 '+sz+' '+sz+'" style="width:100%;max-width:320px;height:auto;display:block;margin:0 auto">';
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#f2f8f4" stroke="#cfe0d6"/>';
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.6)+'" fill="none" stroke="#e0ebe4" stroke-dasharray="3 4"/>';
+    s+='<rect x="'+(cx-8)+'" y="'+(cy-30)+'" width="16" height="60" rx="3" fill="#e7d9b0" stroke="#cdbb8a"/>';
+    fs.forEach(function(p){var ang=mirror?(360-p[0])%360:p[0],rad=ang*Math.PI/180,len=R*Math.min(1,p[1]/maxl);
+      s+='<circle cx="'+(cx+len*Math.sin(rad)).toFixed(1)+'" cy="'+(cy-len*Math.cos(rad)).toFixed(1)+'" r="6.5" fill="#d9322a" fill-opacity="0.28"/>';
+    });
+    return s+'</svg>';
   }
   // a heat strip: one cell per slot 1..n, shaded by share of innings, count inside
   function heat(rows, key, n, label1){
@@ -139,6 +152,13 @@
          + '(electronic era)'+(hd?' · '+hd+'H bat':'')+' — <span style="color:#0a5b3a">1-3</span>, '
          + '<span style="color:#1769d1">four</span>, <span style="color:#8e44ad">six</span>.</p>'
          + pcWheel(sh, mir) + '</details>';
+    }
+    var fs=(d.fshots||[]);
+    if(fs.length>=5){
+      h += '<details class="pc-det"><summary>🎯 First scoring shot heatmap</summary>'
+         + '<p style="color:#64716a;font-size:.78rem;margin:6px 0">Where the batter gets off '
+         + 'the mark — '+fs.length+' innings'+(d.hand?' · '+d.hand+'H bat':'')+' (ball-by-ball games).</p>'
+         + pcFirstShot(fs, (d.hand==='L')) + '</details>';
     }
     h += '<a class="pc-full" target="_blank" rel="noopener" href="'+STATS_URL
        + '#p='+encodeURIComponent(who)+'">Full match-by-match record on the Statistics page →</a>';
