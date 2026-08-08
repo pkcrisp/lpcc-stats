@@ -310,25 +310,34 @@ function pslice(pl,S,T){   // stats/feats for any (season|all) × (squad|all)
     return e?{b:arrB(e[0]),bw:arrW(e[1]),feats:e[2]||[]}:{b:{},bw:{},feats:[]};}
   var c=(pl.ct||{})[T];return c?{b:arrB(c[0]),bw:arrW(c[1]),feats:c[2]||[]}:{b:{},bw:{},feats:[]};
 }
+function teamsForSeason(pl,S){   // squads the player turned out for — that season, or all seasons
+  if(S==='all'){var tset={};Object.keys(pl.st||{}).forEach(function(s){
+    Object.keys(pl.st[s]).forEach(function(t){if(t!=='*')tset[t]=1;});});return Object.keys(tset).sort();}
+  return Object.keys(pl.st[S]||{}).filter(function(t){return t!=='*';}).sort();
+}
 function showProfile(name,initS,initT){
   currentName=name;var pl=PP.players[name];if(!pl)return;
   el('pp-grid').style.display='none';var box=el('pp-profile');box.style.display='';
   var seasonsAvail=Object.keys(pl.st||{}).map(Number).sort(function(a,b){return b-a;});
-  var tset={};Object.keys(pl.st||{}).forEach(function(s){Object.keys(pl.st[s]).forEach(function(t){if(t!=='*')tset[t]=1;});});
-  var teamsAvail=Object.keys(tset).sort();
   var S=(initS&&initS!=='all'&&seasonsAvail.indexOf(+initS)>=0)?String(initS):'all';
-  var T=(initT&&initT!=='all'&&initT!=='__all'&&teamsAvail.indexOf(initT)>=0)?initT:'all';
   var sOpts='<option value="all">All seasons</option>'+seasonsAvail.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
-  var tOpts='<option value="all">All squads</option>'+teamsAvail.map(function(t){return '<option value="'+esc(t)+'">'+esc(t)+'</option>';}).join('');
   box.innerHTML='<button class="pp-back">← back to squad</button>'
     +'<div class="pp-phead">'+ph(pl)+'<div style="flex:1;min-width:220px"><h2 style="color:#0a5b3a;margin:0">'+esc(name)+'</h2>'
     +'<div class="pp-meta">'+esc(pl.span||'')+'</div>'
-    +'<div class="pp-ptog"><select id="pp-pT">'+tOpts+'</select><select id="pp-pS">'+sOpts+'</select></div>'
+    +'<div class="pp-ptog"><select id="pp-pT"></select><select id="pp-pS">'+sOpts+'</select></div>'
     +'</div></div><div id="pp-body"></div>';
   box.querySelector('.pp-back').addEventListener('click',renderGrid);
-  var selS=box.querySelector('#pp-pS'),selT=box.querySelector('#pp-pT');selS.value=S;selT.value=T;
+  var selS=box.querySelector('#pp-pS'),selT=box.querySelector('#pp-pT');selS.value=S;
+  // team dropdown is SCOPED to the selected season — only in All-seasons mode are all squads listed
+  function fillTeams(keep){
+    var ts=teamsForSeason(pl,selS.value);
+    selT.innerHTML='<option value="all">All squads</option>'+ts.map(function(t){return '<option value="'+esc(t)+'">'+esc(t)+'</option>';}).join('');
+    selT.value=(keep&&keep!=='all'&&keep!=='__all'&&ts.indexOf(keep)>=0)?keep:'all';
+  }
+  fillTeams(initT);
   function go(){renderBody(name,pl,selS.value,selT.value,box.querySelector('#pp-body'));}
-  selS.addEventListener('change',go);selT.addEventListener('change',go);
+  selS.addEventListener('change',function(){fillTeams(selT.value);go();});
+  selT.addEventListener('change',go);
   go();window.scrollTo(0,0);
 }
 function renderBody(name,pl,S,T,body){
