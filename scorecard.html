@@ -28,6 +28,18 @@ padding:4px 12px;font-weight:700;font-size:.85rem}
 .scph-nav:hover{background:rgba(0,0,0,.7)}.scph-prev{left:8px}.scph-next{right:8px}
 .scph-cap{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 12px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:.8rem}
 .scph-cap a{color:#fff;text-decoration:underline}
+.scvid{margin:18px 0}
+.scvid h2{font-size:1.15rem;margin:0 0 10px}
+.scvid-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.scvid-tab{background:#eef2ef;border:1px solid #d9e2dc;color:#274;border-radius:999px;padding:4px 12px;font-size:.8rem;cursor:pointer}
+.scvid-tab.on{background:#0a5b3a;border-color:#0a5b3a;color:#fff}
+.scvid-car{position:relative;background:#0d130f;border-radius:12px;overflow:hidden}
+.scvid-v{width:100%;max-height:520px;display:block;background:#000}
+.scvid-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:0;font-size:1.6rem;line-height:1;width:40px;height:52px;cursor:pointer;border-radius:8px;z-index:2}
+.scvid-nav:hover{background:rgba(0,0,0,.7)}.scvid-prev{left:8px}.scvid-next{right:8px}
+.scvid-cap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:#12261b;color:#eaf5ee;font-size:.82rem}
+.scvid-badge{font-weight:700;padding:2px 9px;border-radius:6px;background:#0a5b3a;color:#fff;white-space:nowrap}
+.scvid-badge.Wicket{background:#c0392b}.scvid-badge.Six{background:#8e44ad}.scvid-badge.Four{background:#1769d1}
 .inn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px}
 .inn h2{margin:0 0 2px;color:var(--green);font-size:1.1rem}
 .inn .tot{font-weight:700;font-size:1.05rem;margin:0 0 10px;color:var(--ink)}
@@ -440,6 +452,45 @@ function scPhotosWire(d){
  if(p)p.addEventListener('click',function(){go(i-1);});
  if(nx)nx.addEventListener('click',function(){go(i+1);});
 }
+// NV Play highlight clips — filmed fours / sixes / wickets, hot-linked from the ECB NV Play CDN
+function scVideos(d){
+ if(!d.videos||!d.videos.length)return '';
+ var n=d.videos.length,ev={};
+ d.videos.forEach(function(c){ev[c.event]=(ev[c.event]||0)+1;});
+ var tabs='<button class="scvid-tab on" data-ev="__all">All ('+n+')</button>';
+ ['Wicket','Four','Six'].forEach(function(e){if(ev[e])tabs+='<button class="scvid-tab" data-ev="'+e+'">'
+   +(e==='Wicket'?'🎯 Wickets':e==='Four'?'4️⃣ Fours':'6️⃣ Sixes')+' ('+ev[e]+')</button>';});
+ var c0=d.videos[0];
+ return '<div class="scvid"><h2>🎥 Match highlights ('+n+')</h2>'
+  +'<div class="scvid-tabs">'+tabs+'</div>'
+  +'<div class="scvid-car">'
+  +(n>1?'<button class="scvid-nav scvid-prev" aria-label="previous clip">‹</button>':'')
+  +'<video class="scvid-v" controls preload="none" playsinline poster="'+esc(c0.thumb||'')+'" src="'+esc(c0.url)+'"></video>'
+  +(n>1?'<button class="scvid-nav scvid-next" aria-label="next clip">›</button>':'')
+  +'<div class="scvid-cap"><span class="scvid-badge '+esc(c0.event)+'">'+esc(c0.event)+'</span>'
+  +'<span class="scvid-ct" style="flex:1;text-align:center">'+esc(c0.caption||'')+'</span>'
+  +'<span class="scvid-n">1 / '+n+'</span></div></div>'
+  +'<p style="color:var(--mut);font-size:.75rem;margin:6px 2px 0">Video: ECB NV Play electronic scoring.</p></div>';
+}
+function scVideosWire(d){
+ if(!d.videos||!d.videos.length)return;
+ var all=d.videos,list=all,i=0;
+ var v=document.querySelector('.scvid-v'),badge=document.querySelector('.scvid-badge'),
+     ct=document.querySelector('.scvid-ct'),num=document.querySelector('.scvid-n');
+ if(!v)return;
+ function show(k){if(!list.length)return;i=(k+list.length)%list.length;var c=list[i];
+  v.pause();v.setAttribute('poster',c.thumb||'');v.src=c.url;v.load();
+  if(badge){badge.textContent=c.event;badge.className='scvid-badge '+c.event;}
+  if(ct)ct.textContent=c.caption||'';if(num)num.textContent=(i+1)+' / '+list.length;}
+ var p=document.querySelector('.scvid-prev'),nx=document.querySelector('.scvid-next');
+ if(p)p.addEventListener('click',function(){show(i-1);});
+ if(nx)nx.addEventListener('click',function(){show(i+1);});
+ Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(t){
+  t.addEventListener('click',function(){
+   Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(x){x.classList.remove('on');});
+   t.classList.add('on');var e=t.getAttribute('data-ev');
+   list=(e==='__all')?all:all.filter(function(c){return c.event===e;});show(0);});});
+}
 function render(d){
  var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
  var toss=d.toss?'<div class="toss">🪙 '+esc(d.toss.replace(/\s*:\s*/,' '))+'</div>':'';
@@ -455,6 +506,7 @@ function render(d){
   +'<p>'+[when,esc(d.venue||''),esc(d.comp||'')].filter(Boolean).join(' · ')+'</p>'
   +toss+weatherBlock(d.wx)
   +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+spon+'</div>';
+ h+=scVideos(d);
  h+=scPhotos(d);
  h+=ptsChips(d);
  h+=worm(d);
@@ -473,6 +525,7 @@ function render(d){
  h+='<p class="pc">Reconstructed from the club\'s local Play-Cricket archive · '
    +'<a href="https://lintonpark.play-cricket.com/website/results/'+encodeURIComponent(d.id)+'" target="_blank" rel="noopener">view on Play-Cricket ↗</a></p>';
  document.getElementById('app').innerHTML=h;
+ scVideosWire(d);
  scPhotosWire(d);
  document.title=(d.home||'')+' v '+(d.away||'')+' — Scorecard';
  if(d.shots){drawWheels(d,'');var sel=document.getElementById('ww-bat'),mir=document.getElementById('ww-mirror');
