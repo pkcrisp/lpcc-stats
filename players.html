@@ -221,14 +221,15 @@ function card(name){
   var batrow=sc(nf(runs),'runs')+(avg!=null?sc(avg,'avg'):'')+(sr!=null?sc(sr,'SR'):'');
   var bowlrow=wkts?(sc(nf(wkts),'wkts')+(bavg!=null?sc(bavg,'avg'):'')+(bsr!=null?sc(bsr,'SR'):'')):'';
   var stats='<div class="pp-stat3"><div class="pp-srow bat">'+batrow+'</div>'
-    +'<div class="pp-srow mid">'+sc(nf(games),'games')+'</div>'
     +(bowlrow?'<div class="pp-srow bowl">'+bowlrow+'</div>':'')+'</div>';
   var chips=(feats||[]).slice(0,2).map(function(f){return '<span class="pp-chip">'+esc(f)+'</span>';}).join('')
     +(dish||[]).slice(0,1).map(function(f){return '<span class="pp-chip dis">'+esc(f.split(' (')[0])+'</span>';}).join('');
+  // games sits up on the season line: "2026 · 5 games"
+  var meta2=esc(meta)+' · '+nf(games)+' game'+(games===1?'':'s');
   return '<div class="pp-card" data-nm="'+esc(name)+'">'
     +'<div class="pp-top">'+ph(pl)+'<div class="pp-id">'
     +'<div class="pp-nm">'+esc(name)+'</div>'
-    +'<div class="pp-meta">'+esc(meta)+'</div></div></div>'
+    +'<div class="pp-meta">'+meta2+'</div></div></div>'
     +stats+(chips?'<div class="pp-chips">'+chips+'</div>':'')+'</div>';
 }
 // Whole-team overview for the selected season + squad ('All squads' = the whole club that
