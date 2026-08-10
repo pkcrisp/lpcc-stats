@@ -40,11 +40,13 @@ padding:4px 12px;font-weight:700;font-size:.85rem}
 .scvid-cap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:#12261b;color:#eaf5ee;font-size:.82rem}
 .scvid-badge{font-weight:700;padding:2px 9px;border-radius:6px;background:#0a5b3a;color:#fff;white-space:nowrap}
 .scvid-badge.Wicket{background:#c0392b}.scvid-badge.Six{background:#8e44ad}.scvid-badge.Four{background:#1769d1}
-.scvid-full{position:relative;display:block;text-decoration:none;line-height:0}
-.scvid-full img{width:100%;max-height:520px;object-fit:cover;display:block}
+.scvid-full{position:relative;display:block}
+.scvid-embed{position:relative;padding-bottom:56.25%;height:0;background:#000}
+.scvid-embed iframe,.scvid-embed>div{position:absolute;inset:0;width:100%;height:100%;border:0}
+.scvid-ytlink{position:relative;display:block;text-decoration:none;line-height:0}
+.scvid-ytlink img{width:100%;max-height:520px;object-fit:cover;display:block}
 .scvid-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:rgba(200,30,30,.92);color:#fff;font-size:2rem;display:flex;align-items:center;justify-content:center;padding-left:6px}
-.scvid-fullcap{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-weight:700;font-size:.9rem;line-height:1.3}
-.scvid-play+.scvid-fullcap{text-align:center}
+.scvid-fullcap{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-weight:700;font-size:.85rem;line-height:1.3;text-align:center}
 .inn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px}
 .inn h2{margin:0 0 2px;color:var(--green);font-size:1.1rem}
 .inn .tot{font-weight:700;font-size:1.05rem;margin:0 0 10px;color:var(--ink)}
@@ -478,12 +480,16 @@ function scVideos(d){
   +'<div class="scvid-cap"><span class="scvid-badge '+esc(c0.event)+'">'+esc(c0.event)+'</span>'
   +'<span class="scvid-ct" style="flex:1;text-align:center">'+esc(c0.caption||'')+'</span>'
   +'<span class="scvid-n">1 / '+nc+'</span></div></div>'):'';
- var fullPanel=yt?('<a class="scvid-full" href="https://www.youtube.com/watch?v='+esc(yt)+'" target="_blank" rel="noopener"'
-  +(nc?' style="display:none"':'')+'>'
+ // Full match: try the YouTube EMBED first; the IFrame API's onError (101/150 = owner disallows
+ // embedded playback) swaps to the link-out. So it plays inline where allowed, else opens on YouTube.
+ var fullPanel=yt?('<div class="scvid-full"'+(nc?' style="display:none"':'')+'>'
+  +'<div class="scvid-embed"><div id="scyt-player"></div></div>'
+  +'<a class="scvid-ytlink" href="https://www.youtube.com/watch?v='+esc(yt)+'" target="_blank" rel="noopener" style="display:none">'
   +'<img src="https://img.youtube.com/vi/'+esc(yt)+'/hqdefault.jpg" alt="Full match replay on YouTube" loading="lazy">'
-  +'<span class="scvid-play">▶</span><span class="scvid-fullcap">▶ Watch the full match on YouTube ↗</span></a>'):'';
+  +'<span class="scvid-play">▶</span><span class="scvid-fullcap">▶ Embedding is disabled for this video — watch the full match on YouTube ↗</span></a>'
+  +'</div>'):'';
  var head=nc?('🎥 Match video ('+nc+' clip'+(nc===1?'':'s')+(yt?' + full match':'')+')'):'🎥 Full match';
- var note=(nc?'Highlight clips from ECB NV Play electronic scoring. ':'')+(yt?'Full match hosted on the club YouTube (opens there).':'');
+ var note=(nc?'Highlight clips from ECB NV Play electronic scoring. ':'')+(yt?'Full match on YouTube — plays inline where the owner allows embedding, otherwise opens on YouTube.':'');
  return '<div class="scvid"><h2>'+head+'</h2><div class="scvid-tabs">'+tabs+'</div>'
   +'<div class="scvid-car">'+clipPanel+fullPanel+'</div>'
   +'<p style="color:var(--mut);font-size:.75rem;margin:6px 2px 0">'+note+'</p></div>';
@@ -501,13 +507,28 @@ function scVideosWire(d){
  var p=document.querySelector('.scvid-prev'),nx=document.querySelector('.scvid-next');
  if(p)p.addEventListener('click',function(){show(i-1);});
  if(nx)nx.addEventListener('click',function(){show(i+1);});
+ // Full match: attempt the embed via the IFrame API on first open; fall back to the link-out
+ // only if playback errors (101/150 = owner disallows embedding; 2/5/100 = other failures).
+ var ytTried=false;
+ function ytFallback(){var em=document.querySelector('.scvid-embed'),lk=document.querySelector('.scvid-ytlink');
+  if(em)em.style.display='none';if(lk)lk.style.display='';}
+ function ytTry(){if(ytTried||!d.yt)return;ytTried=true;
+  var make=function(){try{new YT.Player('scyt-player',{videoId:d.yt,host:'https://www.youtube-nocookie.com',
+    playerVars:{rel:0,modestbranding:1},
+    events:{onError:function(ev){if([2,5,100,101,150].indexOf(ev.data)>=0)ytFallback();}}});
+   }catch(err){ytFallback();}};
+  if(window.YT&&window.YT.Player){make();return;}
+  var prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=function(){if(prev)prev();make();};
+  if(!document.getElementById('yt-iframe-api')){var s=document.createElement('script');s.id='yt-iframe-api';
+   s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);}}
  Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(t){
   t.addEventListener('click',function(){
    Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(x){x.classList.remove('on');});
    t.classList.add('on');var e=t.getAttribute('data-ev');
-   if(e==='__yt'){if(v)v.pause();if(clipsPanel)clipsPanel.style.display='none';if(fullPanel)fullPanel.style.display='';return;}
+   if(e==='__yt'){if(v)v.pause();if(clipsPanel)clipsPanel.style.display='none';if(fullPanel)fullPanel.style.display='';ytTry();return;}
    if(fullPanel)fullPanel.style.display='none';if(clipsPanel)clipsPanel.style.display='';
    list=(e==='__all')?all:all.filter(function(c){return c.event===e;});show(0);});});
+ if(!clips.length&&d.yt)ytTry();   // full-match tab is default-active when there are no clips
 }
 function render(d){
  var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
