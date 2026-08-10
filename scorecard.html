@@ -40,10 +40,11 @@ padding:4px 12px;font-weight:700;font-size:.85rem}
 .scvid-cap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:#12261b;color:#eaf5ee;font-size:.82rem}
 .scvid-badge{font-weight:700;padding:2px 9px;border-radius:6px;background:#0a5b3a;color:#fff;white-space:nowrap}
 .scvid-badge.Wicket{background:#c0392b}.scvid-badge.Six{background:#8e44ad}.scvid-badge.Four{background:#1769d1}
-.scyt{margin:18px 0}
-.scyt h2{font-size:1.15rem;margin:0 0 10px}
-.scyt-frame{position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;background:#000}
-.scyt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.scvid-full{position:relative;display:block;text-decoration:none;line-height:0}
+.scvid-full img{width:100%;max-height:520px;object-fit:cover;display:block}
+.scvid-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:rgba(200,30,30,.92);color:#fff;font-size:2rem;display:flex;align-items:center;justify-content:center;padding-left:6px}
+.scvid-fullcap{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-weight:700;font-size:.9rem;line-height:1.3}
+.scvid-play+.scvid-fullcap{text-align:center}
 .inn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px}
 .inn h2{margin:0 0 2px;color:var(--green);font-size:1.1rem}
 .inn .tot{font-weight:700;font-size:1.05rem;margin:0 0 10px;color:var(--ink)}
@@ -456,41 +457,44 @@ function scPhotosWire(d){
  if(p)p.addEventListener('click',function(){go(i-1);});
  if(nx)nx.addEventListener('click',function(){go(i+1);});
 }
-// Full-match replay — a club-attached YouTube stream, privacy-enhanced (youtube-nocookie)
-function scStream(d){
- if(!d.yt)return '';
- return '<div class="scyt"><h2>📺 Full match replay</h2>'
-  +'<div class="scyt-frame"><iframe src="https://www.youtube-nocookie.com/embed/'+esc(d.yt)+'"'
-  +' title="Full match replay" loading="lazy" allowfullscreen'
-  +' allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe></div></div>';
-}
-// NV Play highlight clips — filmed fours / sixes / wickets, hot-linked from the ECB NV Play CDN
+// One video area for the match: NV Play highlight clips (filmed fours/sixes/wickets, hot-linked
+// from the ECB NV Play CDN) PLUS a "Full match" tab. The full match is a YouTube link-out, not an
+// embed — the club's stream may disallow embedding, and a thumbnail-that-opens-on-YouTube always
+// works — so we keep just one clip player on the page and switch panels by tab.
 function scVideos(d){
- if(!d.videos||!d.videos.length)return '';
- var n=d.videos.length,ev={};
- d.videos.forEach(function(c){ev[c.event]=(ev[c.event]||0)+1;});
- var tabs='<button class="scvid-tab on" data-ev="__all">All ('+n+')</button>';
- ['Wicket','Four','Six'].forEach(function(e){if(ev[e])tabs+='<button class="scvid-tab" data-ev="'+e+'">'
-   +(e==='Wicket'?'🎯 Wickets':e==='Four'?'4️⃣ Fours':'6️⃣ Sixes')+' ('+ev[e]+')</button>';});
- var c0=d.videos[0];
- return '<div class="scvid"><h2>🎥 Match highlights ('+n+')</h2>'
-  +'<div class="scvid-tabs">'+tabs+'</div>'
-  +'<div class="scvid-car">'
-  +(n>1?'<button class="scvid-nav scvid-prev" aria-label="previous clip">‹</button>':'')
+ var clips=d.videos||[],nc=clips.length,yt=d.yt;
+ if(!nc&&!yt)return '';
+ var ev={};clips.forEach(function(c){ev[c.event]=(ev[c.event]||0)+1;});
+ var tabs='';
+ if(nc){tabs+='<button class="scvid-tab on" data-ev="__all">All ('+nc+')</button>';
+  ['Wicket','Four','Six'].forEach(function(e){if(ev[e])tabs+='<button class="scvid-tab" data-ev="'+e+'">'
+    +(e==='Wicket'?'🎯 Wickets':e==='Four'?'4️⃣ Fours':'6️⃣ Sixes')+' ('+ev[e]+')</button>';});}
+ if(yt)tabs+='<button class="scvid-tab'+(nc?'':' on')+'" data-ev="__yt">🎬 Full match</button>';
+ var c0=nc?clips[0]:null;
+ var clipPanel=nc?('<div class="scvid-clips">'
+  +(nc>1?'<button class="scvid-nav scvid-prev" aria-label="previous clip">‹</button>':'')
   +'<video class="scvid-v" controls preload="none" playsinline poster="'+esc(c0.thumb||'')+'" src="'+esc(c0.url)+'"></video>'
-  +(n>1?'<button class="scvid-nav scvid-next" aria-label="next clip">›</button>':'')
+  +(nc>1?'<button class="scvid-nav scvid-next" aria-label="next clip">›</button>':'')
   +'<div class="scvid-cap"><span class="scvid-badge '+esc(c0.event)+'">'+esc(c0.event)+'</span>'
   +'<span class="scvid-ct" style="flex:1;text-align:center">'+esc(c0.caption||'')+'</span>'
-  +'<span class="scvid-n">1 / '+n+'</span></div></div>'
-  +'<p style="color:var(--mut);font-size:.75rem;margin:6px 2px 0">Video: ECB NV Play electronic scoring.</p></div>';
+  +'<span class="scvid-n">1 / '+nc+'</span></div></div>'):'';
+ var fullPanel=yt?('<a class="scvid-full" href="https://www.youtube.com/watch?v='+esc(yt)+'" target="_blank" rel="noopener"'
+  +(nc?' style="display:none"':'')+'>'
+  +'<img src="https://img.youtube.com/vi/'+esc(yt)+'/hqdefault.jpg" alt="Full match replay on YouTube" loading="lazy">'
+  +'<span class="scvid-play">▶</span><span class="scvid-fullcap">▶ Watch the full match on YouTube ↗</span></a>'):'';
+ var head=nc?('🎥 Match video ('+nc+' clip'+(nc===1?'':'s')+(yt?' + full match':'')+')'):'🎥 Full match';
+ var note=(nc?'Highlight clips from ECB NV Play electronic scoring. ':'')+(yt?'Full match hosted on the club YouTube (opens there).':'');
+ return '<div class="scvid"><h2>'+head+'</h2><div class="scvid-tabs">'+tabs+'</div>'
+  +'<div class="scvid-car">'+clipPanel+fullPanel+'</div>'
+  +'<p style="color:var(--mut);font-size:.75rem;margin:6px 2px 0">'+note+'</p></div>';
 }
 function scVideosWire(d){
- if(!d.videos||!d.videos.length)return;
- var all=d.videos,list=all,i=0;
+ var clips=d.videos||[];if(!clips.length&&!d.yt)return;
+ var all=clips,list=clips,i=0;
+ var clipsPanel=document.querySelector('.scvid-clips'),fullPanel=document.querySelector('.scvid-full');
  var v=document.querySelector('.scvid-v'),badge=document.querySelector('.scvid-badge'),
      ct=document.querySelector('.scvid-ct'),num=document.querySelector('.scvid-n');
- if(!v)return;
- function show(k){if(!list.length)return;i=(k+list.length)%list.length;var c=list[i];
+ function show(k){if(!list.length||!v)return;i=(k+list.length)%list.length;var c=list[i];
   v.pause();v.setAttribute('poster',c.thumb||'');v.src=c.url;v.load();
   if(badge){badge.textContent=c.event;badge.className='scvid-badge '+c.event;}
   if(ct)ct.textContent=c.caption||'';if(num)num.textContent=(i+1)+' / '+list.length;}
@@ -501,6 +505,8 @@ function scVideosWire(d){
   t.addEventListener('click',function(){
    Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(x){x.classList.remove('on');});
    t.classList.add('on');var e=t.getAttribute('data-ev');
+   if(e==='__yt'){if(v)v.pause();if(clipsPanel)clipsPanel.style.display='none';if(fullPanel)fullPanel.style.display='';return;}
+   if(fullPanel)fullPanel.style.display='none';if(clipsPanel)clipsPanel.style.display='';
    list=(e==='__all')?all:all.filter(function(c){return c.event===e;});show(0);});});
 }
 function render(d){
@@ -518,7 +524,6 @@ function render(d){
   +'<p>'+[when,esc(d.venue||''),esc(d.comp||'')].filter(Boolean).join(' · ')+'</p>'
   +toss+weatherBlock(d.wx)
   +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+spon+'</div>';
- h+=scStream(d);
  h+=scVideos(d);
  h+=scPhotos(d);
  h+=ptsChips(d);
