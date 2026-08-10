@@ -36,17 +36,24 @@ team, or search for anyone by name to open their profile.</p>
 .pp-ovstat{display:flex;flex-direction:column;line-height:1.15}
 .pp-ovstat b{font-size:1.5rem;font-weight:800}
 .pp-ovstat span{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;opacity:.9}
-.pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
-.pp-card{background:#fff;border:1px solid #e1e7e3;border-radius:12px;padding:14px;cursor:pointer;
-  text-align:center;box-shadow:0 1px 3px rgba(26,34,30,.07);transition:transform .08s}
-.pp-card:hover{transform:translateY(-2px);border-color:#0a5b3a}
+.pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:14px}
+.pp-card{background:#fff;border:1px solid #e1e7e3;border-radius:14px;padding:14px 16px;cursor:pointer;
+  text-align:left;box-shadow:0 1px 3px rgba(26,34,30,.07);transition:transform .1s,box-shadow .1s;
+  display:flex;flex-direction:column}
+.pp-card:hover{transform:translateY(-2px);border-color:#0a5b3a;box-shadow:0 5px 16px rgba(10,91,58,.15)}
 .pp-ph{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #e1e7e3;margin:0 auto 8px;display:block}
 .pp-ph-none{width:96px;height:96px;border-radius:50%;background:#eef4f0;color:#0a5b3a;display:flex;
   align-items:center;justify-content:center;font-size:2rem;font-weight:800;margin:0 auto 8px}
-.pp-nm{font-weight:800;color:#0a5b3a}.pp-meta{color:#64716a;font-size:.8rem;margin-top:2px}
-.pp-cstats{margin-top:6px;display:flex;flex-direction:column;gap:1px}
-.pp-cstats span{font-size:.78rem;color:#3a4a42}.pp-cstats b{color:#0a5b3a}
-.pp-chips{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.pp-top{display:flex;gap:11px;align-items:center}
+.pp-top .pp-ph,.pp-top .pp-ph-none{width:54px;height:54px;margin:0;font-size:1.25rem;flex:0 0 auto;border-width:2px}
+.pp-id{min-width:0}
+.pp-nm{font-weight:800;color:#0a5b3a;font-size:1.04rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-meta{color:#64716a;font-size:.78rem;margin-top:2px}
+.pp-statrow{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px;padding-top:11px;border-top:1px solid #eef2ef}
+.pp-sc{display:flex;flex-direction:column;line-height:1.05}
+.pp-sc b{color:#0a5b3a;font-size:1.18rem;font-weight:800}
+.pp-sc span{color:#8a968f;font-size:.62rem;text-transform:uppercase;letter-spacing:.03em;margin-top:1px}
+.pp-chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-start;margin-top:11px}
 .pp-chip{background:#eef4f0;color:#0a5b3a;border-radius:20px;padding:1px 8px;font-size:.68rem;font-weight:700}
 .pp-chip.dis{background:#fff4e5;color:#8a5a00}
 .pp-profile{background:#fff;border:1px solid #e1e7e3;border-radius:14px;padding:20px;margin-top:8px}
@@ -117,7 +124,7 @@ table.pp-seasons td{padding:5px 8px;border-top:1px solid #eef2ef}
 @media (max-width:640px){
   .pp-wsvg{min-width:0}                     /* charts scale via viewBox — no 420px floor on phones */
   .pp-profile{padding:14px 12px}
-  .pp-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .pp-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
   .pp-dlab{width:96px}.pp-vlab{min-width:100px}
 }
 .pp-vitals{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:2px 22px;
@@ -207,16 +214,19 @@ function card(name){
       runs=b[1]||0;avg=b[3];sr=b[7];
       wkts=(w&&w.length)?w[0]:0;bavg=(w&&w.length)?w[2]:null;}
     dish=(pl.disS&&pl.disS[s])||[];}
-  var line1='<b>'+nf(runs)+'</b> run'+(runs===1?'':'s')
-    +(avg!=null?' · <b>'+avg+'</b> avg':'')+(sr!=null?' · SR <b>'+sr+'</b>':'');
-  var line2=wkts?('<b>'+nf(wkts)+'</b> wkt'+(wkts===1?'':'s')+(bavg!=null?' · <b>'+bavg+'</b> avg':'')):'';
-  var stats='<div class="pp-cstats"><span>'+line1+'</span>'+(line2?'<span>'+line2+'</span>':'')+'</div>';
+  function sc(v,l){return '<div class="pp-sc"><b>'+esc(v)+'</b><span>'+esc(l)+'</span></div>';}
+  var strip=sc(nf(games),'games')+sc(nf(runs),'runs');
+  if(avg!=null)strip+=sc(avg,'avg');
+  if(sr!=null)strip+=sc(sr,'SR');
+  if(wkts){strip+=sc(nf(wkts),'wkts');if(bavg!=null)strip+=sc(bavg,'bl avg');}
   var chips=(feats||[]).slice(0,2).map(function(f){return '<span class="pp-chip">'+esc(f)+'</span>';}).join('')
     +(dish||[]).slice(0,1).map(function(f){return '<span class="pp-chip dis">'+esc(f.split(' (')[0])+'</span>';}).join('');
-  return '<div class="pp-card" data-nm="'+esc(name)+'">'+ph(pl)+
-    '<div class="pp-nm">'+esc(name)+'</div><div class="pp-meta">'+esc(meta)+
-    ' · '+nf(games)+' game'+(games===1?'':'s')+'</div>'+stats
-    +'<div class="pp-chips">'+chips+'</div></div>';
+  return '<div class="pp-card" data-nm="'+esc(name)+'">'
+    +'<div class="pp-top">'+ph(pl)+'<div class="pp-id">'
+    +'<div class="pp-nm">'+esc(name)+'</div>'
+    +'<div class="pp-meta">'+esc(meta)+'</div></div></div>'
+    +'<div class="pp-statrow">'+strip+'</div>'
+    +(chips?'<div class="pp-chips">'+chips+'</div>':'')+'</div>';
 }
 // Whole-team overview for the selected season + squad ('All squads' = the whole club that
 // season): total runs & wickets with batting avg/SR and bowling avg/economy, summed across the
