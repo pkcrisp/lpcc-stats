@@ -46,6 +46,13 @@ team, or search for anyone by name to open their profile.</p>
   align-items:center;justify-content:center;font-size:2rem;font-weight:800;margin:0 auto 8px}
 .pp-top{display:flex;gap:11px;align-items:center}
 .pp-top .pp-ph,.pp-top .pp-ph-none{width:54px;height:54px;margin:0;font-size:1.25rem;flex:0 0 auto;border-width:2px}
+.pp-caps{margin-left:auto;display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex:0 0 auto}
+.pp-cap{border-radius:20px;padding:2px 9px;font-size:.63rem;font-weight:800;white-space:nowrap;color:#fff;
+  box-shadow:0 1px 2px rgba(26,34,30,.22)}
+.pp-cap.orange{background:#ff7a00}.pp-cap.purple{background:#7b2ff7}
+.pp-card.cap-orange{background:#fff8f0}
+.pp-card.cap-purple{background:#faf6ff}
+.pp-card.cap-orange.cap-purple{background:linear-gradient(135deg,#fff8f0 55%,#faf6ff)}
 .pp-id{min-width:0}
 .pp-nm{font-weight:800;color:#0a5b3a;font-size:1.04rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pp-meta{color:#64716a;font-size:.78rem;margin-top:2px}
@@ -148,6 +155,7 @@ function initials(n){return n.split(/\s+/).map(function(w){return w[0]||'';}).jo
 function ph(pl,cls){return pl.photo?('<img class="pp-ph '+(cls||'')+'" src="'+esc(pl.photo)+'" alt="'+esc('')+'">')
   :('<div class="pp-ph-none '+(cls||'')+'">'+esc(initials(currentName))+'</div>');}
 var currentName='';
+var CAP={runs:null,wkts:null};   // IPL-style caps for the CURRENT squad view: top runs / top wkts
 var SC='https://lintonparkcricketclub.co.uk/scorecard.html?m=';
 function vitalsHTML(pl){
   var v=pl.vitals||{},rows=[];
@@ -226,10 +234,15 @@ function card(name){
     +(dish||[]).slice(0,1).map(function(f){return '<span class="pp-chip dis">'+esc(f.split(' (')[0])+'</span>';}).join('');
   // games sits up on the season line: "2026 · 5 games"
   var meta2=esc(meta)+' · '+nf(games)+' game'+(games===1?'':'s');
-  return '<div class="pp-card" data-nm="'+esc(name)+'">'
+  var isO=(!q&&name===CAP.runs),isP=(!q&&name===CAP.wkts);
+  var caps=(isO?'<span class="pp-cap orange" title="Orange Cap — most runs in this squad">🧢 Orange Cap</span>':'')
+          +(isP?'<span class="pp-cap purple" title="Purple Cap — most wickets in this squad">🧢 Purple Cap</span>':'');
+  var cardCls='pp-card'+(isO?' cap-orange':'')+(isP?' cap-purple':'');
+  return '<div class="'+cardCls+'" data-nm="'+esc(name)+'">'
     +'<div class="pp-top">'+ph(pl)+'<div class="pp-id">'
     +'<div class="pp-nm">'+esc(name)+'</div>'
-    +'<div class="pp-meta">'+meta2+'</div></div></div>'
+    +'<div class="pp-meta">'+meta2+'</div></div>'
+    +(caps?'<div class="pp-caps">'+caps+'</div>':'')+'</div>'
     +stats+(chips?'<div class="pp-chips">'+chips+'</div>':'')+'</div>';
 }
 // Whole-team overview for the selected season + squad ('All squads' = the whole club that
@@ -266,6 +279,14 @@ function renderGrid(){
   else{var sq=squadFor(s);names=(x==='__all')?Array.prototype.concat.apply([],Object.keys(sq).sort().map(function(k){return sq[k];}))
     :(sq[x]||[]);names=names.filter(function(v,i,a){return a.indexOf(v)===i;}).sort();}
   el('pp-overview').innerHTML=q?'':overviewHTML(s,x,names.length);   // team overview only in squad view
+  // IPL caps: within the selected squad view, the top run-scorer (orange) and top wicket-taker
+  // (purple). Not in name-search mode (no single squad context).
+  CAP={runs:null,wkts:null};
+  if(!q){var bR=-1,bW=-1;names.forEach(function(nm){var pl=PP.players[nm];if(!pl)return;
+    var se=seasonEntry(pl,s,x);if(!se)return;
+    var r=(se[0]&&se[0][1])||0,w=(se[1]&&se[1].length)?se[1][0]:0;
+    if(r>bR){bR=r;CAP.runs=nm;} if(w>bW){bW=w;CAP.wkts=nm;}});
+    if(bR<=0)CAP.runs=null; if(bW<=0)CAP.wkts=null;}
   el('pp-grid').innerHTML=names.length?names.map(card).join(''):'<p class="pp-empty">No players found.</p>';
   // squad view -> season+team scoped profile; search (all players) -> all-seasons root
   var ctxS=q?null:s, ctxX=q?null:x;
