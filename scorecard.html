@@ -40,6 +40,10 @@ padding:4px 12px;font-weight:700;font-size:.85rem}
 .scvid-cap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:#12261b;color:#eaf5ee;font-size:.82rem}
 .scvid-badge{font-weight:700;padding:2px 9px;border-radius:6px;background:#0a5b3a;color:#fff;white-space:nowrap}
 .scvid-badge.Wicket{background:#c0392b}.scvid-badge.Six{background:#8e44ad}.scvid-badge.Four{background:#1769d1}
+.scyt{margin:18px 0}
+.scyt h2{font-size:1.15rem;margin:0 0 10px}
+.scyt-frame{position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;background:#000}
+.scyt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .inn{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px}
 .inn h2{margin:0 0 2px;color:var(--green);font-size:1.1rem}
 .inn .tot{font-weight:700;font-size:1.05rem;margin:0 0 10px;color:var(--ink)}
@@ -452,6 +456,14 @@ function scPhotosWire(d){
  if(p)p.addEventListener('click',function(){go(i-1);});
  if(nx)nx.addEventListener('click',function(){go(i+1);});
 }
+// Full-match replay — a club-attached YouTube stream, privacy-enhanced (youtube-nocookie)
+function scStream(d){
+ if(!d.yt)return '';
+ return '<div class="scyt"><h2>📺 Full match replay</h2>'
+  +'<div class="scyt-frame"><iframe src="https://www.youtube-nocookie.com/embed/'+esc(d.yt)+'"'
+  +' title="Full match replay" loading="lazy" allowfullscreen'
+  +' allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe></div></div>';
+}
 // NV Play highlight clips — filmed fours / sixes / wickets, hot-linked from the ECB NV Play CDN
 function scVideos(d){
  if(!d.videos||!d.videos.length)return '';
@@ -506,6 +518,7 @@ function render(d){
   +'<p>'+[when,esc(d.venue||''),esc(d.comp||'')].filter(Boolean).join(' · ')+'</p>'
   +toss+weatherBlock(d.wx)
   +(d.result?'<div class="res">'+esc(d.result)+'</div>':'')+spon+'</div>';
+ h+=scStream(d);
  h+=scVideos(d);
  h+=scPhotos(d);
  h+=ptsChips(d);
