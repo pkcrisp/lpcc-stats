@@ -460,18 +460,21 @@ function scPhotosWire(d){
  if(nx)nx.addEventListener('click',function(){go(i+1);});
 }
 // One video area for the match: NV Play highlight clips (filmed fours/sixes/wickets, hot-linked
-// from the ECB NV Play CDN) PLUS a "Full match" tab. The full match is a YouTube link-out, not an
-// embed — the club's stream may disallow embedding, and a thumbnail-that-opens-on-YouTube always
-// works — so we keep just one clip player on the page and switch panels by tab.
+// from the ECB NV Play CDN) PLUS one tab per full-match YouTube video (d.yts — usually one, but a
+// game filmed as two innings carries two labelled videos). Each full-match tab tries the embed
+// first and falls back to the YouTube link only if playback is disallowed. Single clip player + one
+// embed slot per full video, switched by tab.
 function scVideos(d){
- var clips=d.videos||[],nc=clips.length,yt=d.yt;
- if(!nc&&!yt)return '';
+ var clips=d.videos||[],nc=clips.length;
+ var fulls=d.yts||(d.yt?[{youtube:d.yt,label:""}]:[]);   // back-compat with the old single "yt"
+ if(!nc&&!fulls.length)return '';
  var ev={};clips.forEach(function(c){ev[c.event]=(ev[c.event]||0)+1;});
  var tabs='';
  if(nc){tabs+='<button class="scvid-tab on" data-ev="__all">All ('+nc+')</button>';
   ['Wicket','Four','Six'].forEach(function(e){if(ev[e])tabs+='<button class="scvid-tab" data-ev="'+e+'">'
     +(e==='Wicket'?'🎯 Wickets':e==='Four'?'4️⃣ Fours':'6️⃣ Sixes')+' ('+ev[e]+')</button>';});}
- if(yt)tabs+='<button class="scvid-tab'+(nc?'':' on')+'" data-ev="__yt">🎬 Full match</button>';
+ fulls.forEach(function(f,fi){tabs+='<button class="scvid-tab'+(!nc&&fi===0?' on':'')+'" data-ev="__yt'+fi+'">🎬 '
+   +esc(f.label||'Full match')+'</button>';});
  var c0=nc?clips[0]:null;
  var clipPanel=nc?('<div class="scvid-clips">'
   +(nc>1?'<button class="scvid-nav scvid-prev" aria-label="previous clip">‹</button>':'')
@@ -480,24 +483,26 @@ function scVideos(d){
   +'<div class="scvid-cap"><span class="scvid-badge '+esc(c0.event)+'">'+esc(c0.event)+'</span>'
   +'<span class="scvid-ct" style="flex:1;text-align:center">'+esc(c0.caption||'')+'</span>'
   +'<span class="scvid-n">1 / '+nc+'</span></div></div>'):'';
- // Full match: try the YouTube EMBED first; the IFrame API's onError (101/150 = owner disallows
- // embedded playback) swaps to the link-out. So it plays inline where allowed, else opens on YouTube.
- var fullPanel=yt?('<div class="scvid-full"'+(nc?' style="display:none"':'')+'>'
-  +'<div class="scvid-embed"><div id="scyt-player"></div></div>'
-  +'<a class="scvid-ytlink" href="https://www.youtube.com/watch?v='+esc(yt)+'" target="_blank" rel="noopener" style="display:none">'
-  +'<img src="https://img.youtube.com/vi/'+esc(yt)+'/hqdefault.jpg" alt="Full match replay on YouTube" loading="lazy">'
-  +'<span class="scvid-play">▶</span><span class="scvid-fullcap">▶ Embedding is disabled for this video — watch the full match on YouTube ↗</span></a>'
-  +'</div>'):'';
- var head=nc?('🎥 Match video ('+nc+' clip'+(nc===1?'':'s')+(yt?' + full match':'')+')'):'🎥 Full match';
- var note=(nc?'Highlight clips from ECB NV Play electronic scoring. ':'')+(yt?'Full match on YouTube — plays inline where the owner allows embedding, otherwise opens on YouTube.':'');
+ var fullPanels=fulls.map(function(f,fi){var yt=f.youtube;
+  return '<div class="scvid-full" data-fi="'+fi+'"'+((nc||fi>0)?' style="display:none"':'')+'>'
+   +'<div class="scvid-embed"><div id="scyt-player-'+fi+'"></div></div>'
+   +'<a class="scvid-ytlink" href="https://www.youtube.com/watch?v='+esc(yt)+'" target="_blank" rel="noopener" style="display:none">'
+   +'<img src="https://img.youtube.com/vi/'+esc(yt)+'/hqdefault.jpg" alt="Full match replay on YouTube" loading="lazy">'
+   +'<span class="scvid-play">▶</span><span class="scvid-fullcap">▶ Embedding is disabled for this video — watch on YouTube ↗</span></a>'
+   +'</div>';}).join('');
+ var head=nc?('🎥 Match video ('+nc+' clip'+(nc===1?'':'s')+(fulls.length?' + full match':'')+')'):'🎥 Full match';
+ var note=(nc?'Highlight clips from ECB NV Play electronic scoring. ':'')+(fulls.length?'Full match on YouTube — plays inline where the owner allows embedding, otherwise opens on YouTube.':'');
  return '<div class="scvid"><h2>'+head+'</h2><div class="scvid-tabs">'+tabs+'</div>'
-  +'<div class="scvid-car">'+clipPanel+fullPanel+'</div>'
+  +'<div class="scvid-car">'+clipPanel+fullPanels+'</div>'
   +'<p style="color:var(--mut);font-size:.75rem;margin:6px 2px 0">'+note+'</p></div>';
 }
 function scVideosWire(d){
- var clips=d.videos||[];if(!clips.length&&!d.yt)return;
+ var clips=d.videos||[];
+ var fulls=d.yts||(d.yt?[{youtube:d.yt,label:""}]:[]);
+ if(!clips.length&&!fulls.length)return;
  var all=clips,list=clips,i=0;
- var clipsPanel=document.querySelector('.scvid-clips'),fullPanel=document.querySelector('.scvid-full');
+ var clipsPanel=document.querySelector('.scvid-clips');
+ var fullPanels=document.querySelectorAll('.scvid-full');
  var v=document.querySelector('.scvid-v'),badge=document.querySelector('.scvid-badge'),
      ct=document.querySelector('.scvid-ct'),num=document.querySelector('.scvid-n');
  function show(k){if(!list.length||!v)return;i=(k+list.length)%list.length;var c=list[i];
@@ -507,28 +512,33 @@ function scVideosWire(d){
  var p=document.querySelector('.scvid-prev'),nx=document.querySelector('.scvid-next');
  if(p)p.addEventListener('click',function(){show(i-1);});
  if(nx)nx.addEventListener('click',function(){show(i+1);});
- // Full match: attempt the embed via the IFrame API on first open; fall back to the link-out
- // only if playback errors (101/150 = owner disallows embedding; 2/5/100 = other failures).
- var ytTried=false;
- function ytFallback(){var em=document.querySelector('.scvid-embed'),lk=document.querySelector('.scvid-ytlink');
+ // Each full-match video: attempt the embed via the IFrame API on first open of its tab; fall back
+ // to the link-out only if playback errors (101/150 = owner disallows embedding; 2/5/100 = other).
+ var ytTried={};
+ function ytFallback(fi){var panel=document.querySelector('.scvid-full[data-fi="'+fi+'"]');if(!panel)return;
+  var em=panel.querySelector('.scvid-embed'),lk=panel.querySelector('.scvid-ytlink');
   if(em)em.style.display='none';if(lk)lk.style.display='';}
- function ytTry(){if(ytTried||!d.yt)return;ytTried=true;
-  var make=function(){try{new YT.Player('scyt-player',{videoId:d.yt,host:'https://www.youtube-nocookie.com',
+ function ytTry(fi){if(ytTried[fi]||!fulls[fi])return;ytTried[fi]=true;
+  var make=function(){try{new YT.Player('scyt-player-'+fi,{videoId:fulls[fi].youtube,host:'https://www.youtube-nocookie.com',
     playerVars:{rel:0,modestbranding:1},
-    events:{onError:function(ev){if([2,5,100,101,150].indexOf(ev.data)>=0)ytFallback();}}});
-   }catch(err){ytFallback();}};
+    events:{onError:function(ev){if([2,5,100,101,150].indexOf(ev.data)>=0)ytFallback(fi);}}});
+   }catch(err){ytFallback(fi);}};
   if(window.YT&&window.YT.Player){make();return;}
   var prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=function(){if(prev)prev();make();};
   if(!document.getElementById('yt-iframe-api')){var s=document.createElement('script');s.id='yt-iframe-api';
    s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);}}
+ function hideFulls(){Array.prototype.forEach.call(fullPanels,function(p){p.style.display='none';});}
  Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(t){
   t.addEventListener('click',function(){
    Array.prototype.forEach.call(document.querySelectorAll('.scvid-tab'),function(x){x.classList.remove('on');});
    t.classList.add('on');var e=t.getAttribute('data-ev');
-   if(e==='__yt'){if(v)v.pause();if(clipsPanel)clipsPanel.style.display='none';if(fullPanel)fullPanel.style.display='';ytTry();return;}
-   if(fullPanel)fullPanel.style.display='none';if(clipsPanel)clipsPanel.style.display='';
+   var ym=e.match(/^__yt(\d+)$/);
+   if(ym){var fi=+ym[1];if(v)v.pause();if(clipsPanel)clipsPanel.style.display='none';
+    hideFulls();var panel=document.querySelector('.scvid-full[data-fi="'+fi+'"]');if(panel)panel.style.display='';
+    ytTry(fi);return;}
+   hideFulls();if(clipsPanel)clipsPanel.style.display='';
    list=(e==='__all')?all:all.filter(function(c){return c.event===e;});show(0);});});
- if(!clips.length&&d.yt)ytTry();   // full-match tab is default-active when there are no clips
+ if(!clips.length&&fulls.length)ytTry(0);   // first full-match tab is default-active with no clips
 }
 function render(d){
  var when=d.date?new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'';
