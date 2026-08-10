@@ -57,7 +57,8 @@ team, or search for anyone by name to open their profile.</p>
 .pp-nm{font-weight:800;color:#0a5b3a;font-size:1.04rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pp-meta{color:#64716a;font-size:.78rem;margin-top:2px}
 .pp-stat3{margin-top:12px;padding-top:11px;border-top:1px solid #eef2ef;display:flex;flex-direction:column;gap:8px}
-.pp-srow{display:flex;gap:16px}
+.pp-srow{display:flex;gap:14px;align-items:center}
+.pp-ri{flex:0 0 auto;font-size:.95rem;line-height:1}
 .pp-srow .pp-sc{min-width:52px}
 .pp-sc{display:flex;flex-direction:column;line-height:1.05}
 .pp-sc b{color:#0a5b3a;font-size:1.18rem;font-weight:800}
@@ -228,8 +229,8 @@ function card(name){
   // three tiers, columns aligned: batting on top, GAMES in the middle, bowling below (+bowling SR)
   var batrow=sc(nf(runs),'runs')+(avg!=null?sc(avg,'avg'):'')+(sr!=null?sc(sr,'SR'):'');
   var bowlrow=wkts?(sc(nf(wkts),'wkts')+(bavg!=null?sc(bavg,'avg'):'')+(bsr!=null?sc(bsr,'SR'):'')):'';
-  var stats='<div class="pp-stat3"><div class="pp-srow bat">'+batrow+'</div>'
-    +(bowlrow?'<div class="pp-srow bowl">'+bowlrow+'</div>':'')+'</div>';
+  var stats='<div class="pp-stat3"><div class="pp-srow bat"><span class="pp-ri">🏏</span>'+batrow+'</div>'
+    +(bowlrow?'<div class="pp-srow bowl"><span class="pp-ri">🎯</span>'+bowlrow+'</div>':'')+'</div>';
   var chips=(feats||[]).slice(0,2).map(function(f){return '<span class="pp-chip">'+esc(f)+'</span>';}).join('')
     +(dish||[]).slice(0,1).map(function(f){return '<span class="pp-chip dis">'+esc(f.split(' (')[0])+'</span>';}).join('');
   // games sits up on the season line: "2026 · 5 games"
