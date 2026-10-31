@@ -63,7 +63,143 @@
 .sv-done{text-align:center;padding:38px 20px}
 .sv-done h2{color:#0a5b3a;margin:0 0 8px}
 input#sv-pw{width:100%;padding:11px 13px;border:1px solid #d7e0da;border-radius:9px;font-size:1.05rem;letter-spacing:.02em}
-</style><div class="sw"><div class="sw-hero"><h1>🗳️ Men&rsquo;s Playing Survey 2026</h1><p>The survey is now closed.</p></div><div class="sv"><div class="svcard sv-done"><h2>The survey has closed 🔒</h2><p>Thank you to everyone who took the time to answer. The captains and committee will go through every response over the winter.</p><p style="margin-top:16px"><a class="btn ghost" href="index.html" style="text-decoration:none">Back to the club site</a></p></div></div></div>
+</style><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><div class="sw"><div class="sw-hero"><h1>🗳️ Men&rsquo;s Playing Survey 2026</h1><p>Ten questions on selection, Sunday cricket, costs and what you want from the club next season. It takes about four minutes, and it is anonymous.</p></div><div class="sv"><div id="sv-gate" class="svcard"><div class="sv-anon">🔒 <b>This survey is anonymous.</b> We do not ask for your name or email, and nothing that identifies you or your device is stored with your answers &mdash; not your IP address, not the time you submitted, only the date. The password below just shows you are a member of the club; it is not linked to your response.</div><p style="margin:0 0 6px;font-weight:700">Club password</p><p style="margin:0 0 10px;font-size:.85rem;color:#5f7168">Sent round on the club WhatsApp. Capitals and spaces don&rsquo;t matter.</p><input id="sv-pw" type="password" maxlength="60" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><div id="sv-ts" style="margin-top:12px"></div><div class="msg" id="sv-gate-out"></div><div style="margin-top:14px"><button class="btn" id="sv-go">Start the survey</button></div></div><div id="sv-form" class="svcard sv-hide"><div class="sv-anon">🔒 Anonymous &mdash; no name, no email, no IP, no timestamp. Answer as frankly as you like; that is the point of asking this way.</div><div id="sv-qs"></div><div class="msg" id="sv-out"></div><div style="margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn" id="sv-send">Submit my answers</button><span class="sv-skip" id="sv-left"></span></div></div><div id="sv-done" class="svcard sv-hide sv-done"><h2>Thank you 👏</h2><p>Your answers are in, anonymously. The captains and committee will go through every response over the winter.</p><p style="margin-top:16px"><a class="btn ghost" href="index.html" style="text-decoration:none">Back to the club site</a></p></div></div><script>window.SV={worker:"https://lpcc-sponsor.lintonparkcc.workers.dev",sitekey:"0x4AAAAAAD_ERJ1zWWXl4mtE"};
+(function(){
+  var W=window.SV, wid=null, TOKEN=null, SPEC=null, ANS={};
+  var KEY='lpcc-survey-done-';
+  function $(id){return document.getElementById(id);}
+  function show(id){['sv-gate','sv-form','sv-done'].forEach(function(x){
+    $(x).classList.toggle('sv-hide', x!==id);});}
+
+  // Turnstile on the gate only — it guards the password, and the submit that follows is
+  // already holding a signed token.
+  var host=$('sv-ts');
+  if(W.sitekey&&window.turnstile){ wid=window.turnstile.render(host,{sitekey:W.sitekey}); }
+  else if(W.sitekey){ var iv=setInterval(function(){ if(window.turnstile){clearInterval(iv);
+    wid=window.turnstile.render(host,{sitekey:W.sitekey});} },300); }
+
+  function post(path,payload){
+    return fetch(W.worker.replace(/\/$/,'')+path,{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});});
+  }
+
+  // ---------- gate ----------
+  function unlock(){
+    var out=$('sv-gate-out'); out.className='msg';
+    if(!W.worker||!W.sitekey){ out.textContent='The survey is not open yet.'; out.className='msg err'; return; }
+    var pw=$('sv-pw').value.trim();
+    if(!pw){ out.textContent='Please enter the club password.'; out.className='msg err'; return; }
+    var tok=window.turnstile?window.turnstile.getResponse(wid):'';
+    if(!tok){ out.textContent='Please complete the verification.'; out.className='msg err'; return; }
+    var btn=$('sv-go'); btn.disabled=true; out.textContent='Checking…';
+    post('/survey/auth',{password:pw,turnstile:tok}).then(function(res){
+      btn.disabled=false;
+      if(res.s===200&&res.j&&res.j.token){
+        TOKEN=res.j.token; SPEC=res.j.survey;
+        $('sv-pw').value='';                       // don't leave it sitting in the DOM
+        if(seenBefore()){ out.className='msg'; }
+        render(); show('sv-form'); window.scrollTo(0,0);
+      } else if(res.s===429){ out.textContent='Too many attempts — please wait an hour and try again.'; out.className='msg err';
+      } else if(res.s===401){ out.textContent='That password was not recognised. Check the club WhatsApp message.'; out.className='msg err';
+      } else if(res.s===503){ out.textContent='The survey is not open yet.'; out.className='msg err';
+      } else { out.textContent='Could not check that, please try again.'; out.className='msg err'; }
+      if(window.turnstile&&wid!==null){try{window.turnstile.reset(wid);}catch(e){}}
+    }).catch(function(){ btn.disabled=false; out.textContent='Network error, please try again.'; out.className='msg err';
+      if(window.turnstile&&wid!==null){try{window.turnstile.reset(wid);}catch(e){}} });
+  }
+  function seenBefore(){ try{ return !!localStorage.getItem(KEY+(SPEC?SPEC.id:'')); }catch(e){ return false; } }
+  function markSeen(){ try{ localStorage.setItem(KEY+(SPEC?SPEC.id:''),'1'); }catch(e){} }
+
+  // ---------- form ----------
+  function esc(s){return (s==null?'':''+s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  function render(){
+    var wrap=$('sv-qs'); wrap.innerHTML='';
+    SPEC.questions.forEach(function(q,i){
+      var d=document.createElement('div');
+      d.className='sv-q'; d.id='q-'+q.id;
+      var h='<p class="qt"><span class="sv-n">'+(i+1)+'.</span>'+esc(q.text)+'</p>';
+      if(q.type==='one'){
+        q.opts.forEach(function(o,oi){
+          var rid='r-'+q.id+'-'+oi;
+          h+='<label class="sv-opt" for="'+rid+'"><input type="radio" id="'+rid+'" name="'+q.id+'" value="'+esc(o)+'">'+esc(o)+'</label>';
+        });
+      } else {
+        h+='<textarea id="t-'+q.id+'" rows="3" maxlength="2000"></textarea>'
+          +'<div class="sv-count" id="c-'+q.id+'">0 / 2000</div>';
+      }
+      d.innerHTML=h; wrap.appendChild(d);
+    });
+    // wire up
+    SPEC.questions.forEach(function(q){
+      if(q.type==='one'){
+        Array.prototype.forEach.call(document.getElementsByName(q.id),function(el){
+          el.addEventListener('change',function(){
+            ANS[q.id]=el.value;
+            var box=$('q-'+q.id);
+            Array.prototype.forEach.call(box.querySelectorAll('.sv-opt'),function(l){
+              l.classList.toggle('sel', l.querySelector('input').checked); });
+            conditionals(); left();
+          });
+        });
+      } else {
+        var ta=$('t-'+q.id);
+        ta.addEventListener('input',function(){
+          ANS[q.id]=ta.value;
+          $('c-'+q.id).textContent=ta.value.length+' / 2000';
+          left();
+        });
+      }
+    });
+    conditionals(); left();
+  }
+
+  // Q9 only appears once Q8 says it should — the client hides it, the server simply
+  // accepts it blank, so the two cannot disagree in a way that loses an answer.
+  function conditionals(){
+    SPEC.questions.forEach(function(q){
+      if(!q.showIf) return;
+      var on = q.showIf.in.indexOf(ANS[q.showIf.q])!==-1;
+      $('q-'+q.id).classList.toggle('sv-hide', !on);
+      if(!on){ delete ANS[q.id]; var ta=$('t-'+q.id); if(ta) ta.value=''; }
+    });
+  }
+
+  // Count what is still blank, but never block on it: a part-finished survey tells the
+  // committee more than an abandoned one.
+  function left(){
+    var n=0;
+    SPEC.questions.forEach(function(q){
+      if(q.type!=='one') return;
+      if(q.showIf && q.showIf.in.indexOf(ANS[q.showIf.q])===-1) return;
+      if(!ANS[q.id]) n++;
+    });
+    $('sv-left').textContent = n ? (n+' question'+(n===1?'':'s')+' still unanswered — that’s fine, send it anyway.') : 'All answered.';
+  }
+
+  function send(){
+    var out=$('sv-out'); out.className='msg';
+    var any=Object.keys(ANS).some(function(k){ return (ANS[k]||'').trim(); });
+    if(!any){ out.textContent='Please answer at least one question.'; out.className='msg err'; return; }
+    var btn=$('sv-send'); btn.disabled=true; out.textContent='Sending…';
+    var clean={}; Object.keys(ANS).forEach(function(k){ var v=(ANS[k]||'').trim(); if(v) clean[k]=v; });
+    post('/survey/submit',{token:TOKEN,answers:clean}).then(function(res){
+      if(res.s===201){ markSeen(); show('sv-done'); window.scrollTo(0,0); return; }
+      btn.disabled=false;
+      if(res.s===401){ out.textContent='Your session timed out — please enter the password again.'; out.className='msg err'; TOKEN=null; setTimeout(function(){show('sv-gate');},1500); }
+      else if(res.s===429){ out.textContent='Too many submissions from this connection — please try again later.'; out.className='msg err'; }
+      else if(res.s===409){ out.textContent='The survey has closed.'; out.className='msg err'; }
+      else { out.textContent='Could not submit, please try again.'; out.className='msg err'; }
+    }).catch(function(){ btn.disabled=false; out.textContent='Network error, please try again.'; out.className='msg err'; });
+  }
+
+  $('sv-go').addEventListener('click',unlock);
+  $('sv-pw').addEventListener('keydown',function(e){ if(e.key==='Enter') unlock(); });
+  $('sv-send').addEventListener('click',send);
+})();
+</script></div>
 <footer class="lpcc-foot"><div class="lpcc-foot-t">Proudly sponsored by</div><div class="lpcc-foot-logos"><a href="https://www.beesec.co.uk/" target="_blank" rel="noopener" title="BeeSec"><img src="sponsors/beesec.png" alt="BeeSec" loading="lazy"></a><a href="https://amicusaccountancy.co.uk/" target="_blank" rel="noopener" title="Amicus Accountancy"><img src="sponsors/amicus.png" alt="Amicus Accountancy" loading="lazy"></a><a href="https://www.kingfisherbeer.com/" target="_blank" rel="noopener" title="Kingfisher"><img src="sponsors/kingfisher.png" alt="Kingfisher" loading="lazy"></a><a href="https://www.manchett.com/" target="_blank" rel="noopener" title="Manchett"><img src="sponsors/manchett.jpeg" alt="Manchett" loading="lazy"></a></div><div class="lpcc-foot-links"><a href="sponsors.html">Meet our sponsors</a> · <a href="brands.html">Member brands</a></div><div class="lpcc-foot-pc"><a href="https://www.play-cricket.com" target="_blank" rel="noopener">Powered by ECB Play-Cricket</a></div></footer>
 <script>(function(){try{var ua=navigator.userAgent||'';if(/Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile|BlackBerry|Windows Phone/i.test(ua)||((navigator.maxTouchPoints||0)>1&&window.matchMedia('(max-width:900px)').matches)){document.documentElement.classList.add('is-mobile');}}catch(e){}var _nav=document.querySelector('.lpcc-nav');function _nh(){if(_nav)document.documentElement.style.setProperty('--lpcc-navh',_nav.offsetHeight+'px');}_nh();window.addEventListener('resize',_nh);window.addEventListener('orientationchange',_nh);var m=document.querySelectorAll('.lpcc-menu');m.forEach(function(d){d.addEventListener('toggle',function(){if(d.open)m.forEach(function(o){if(o!==d)o.open=false;});});});document.addEventListener('click',function(e){if(!e.target.closest('.lpcc-menu'))m.forEach(function(o){o.open=false;});});var onproxy=location.hostname.indexOf('translate.goog')>=0;if(!onproxy){document.querySelectorAll('.lpcc-lang a[data-proxy]').forEach(function(a){var tl=a.getAttribute('data-tl');a.href='https://lintonparkcricketclub-co-uk.translate.goog'+location.pathname+(location.search?location.search+'&':'?')+'_x_tr_sl=en&_x_tr_tl='+tl+'&_x_tr_hl='+tl+'&_x_tr_pto=wapp';});}else{document.querySelectorAll('.lpcc-lang a[data-proxy]').forEach(function(a){var tl=a.getAttribute('data-tl');var real=location.search.replace(/(^|[?&])_x_tr_[a-z]+=[^&]*/g,'').replace(/^[?&]+/,'');var url='https://lintonparkcricketclub-co-uk.translate.goog'+location.pathname+'?'+(real?real+'&':'')+'_x_tr_sl=en&_x_tr_tl='+tl+'&_x_tr_hl='+tl+'&_x_tr_pto=wapp';a.href=url;a.setAttribute('target','_top');a.onclick=function(ev){ev.preventDefault();(window.top||window).location.href=url;return false;};});}var en=document.getElementById('lpc-en');if(en&&onproxy){var real='https://lintonparkcricketclub.co.uk'+location.pathname;en.href=real;en.setAttribute('target','_top');en.onclick=function(ev){ev.preventDefault();(window.top||window).location.href=real;return false;};}})();</script>
 </body>
